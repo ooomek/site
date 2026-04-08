@@ -128,7 +128,7 @@ export function SiteHeader({
                             >
                                 Услуги
                             </a>
-                            <div className="mt-1 space-y-1">{serviceLinks}</div>
+                            {/* <div className="mt-1 space-y-1">{serviceLinks}</div> */}
                         </div>
                         <a
                             className="block rounded px-2 py-2 hover:bg-[#1e4e81]"

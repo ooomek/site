@@ -3,8 +3,14 @@ import { useEffect, useRef, useState } from 'react';
 import { SiteFooter } from '../components/site/site-footer';
 import { SiteHeader } from '../components/site/site-header';
 import { SiteShell } from '../components/site/site-shell';
-import type { CompanyData } from '../components/site/types';
+import type {
+  CompanyData,
+  ServiceData,
+  LicenseData,
+  PartnerData,
+} from '../components/site/types';
 import { Button } from '../components/ui/button';
+import { companyRu, servicesRu, licensesRu, partnersRu } from '../data/ru';
 import {
     Dialog,
     DialogContent,
@@ -16,42 +22,15 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { formatRuPhone } from '../lib/phone-mask';
 
-type ServiceData = {
-    id: number;
-    title: string;
-    short_description: string | null;
-    slug: string;
-    icon_url: string | null;
-    image_url: string | null;
-};
 
-type LicenseData = {
-    id: number;
-    title: string;
-    description: string | null;
-    image_url: string | null;
-    document_url: string | null;
-};
 
-type PartnerData = {
-    id: number;
-    name: string;
-    url: string | null;
-    logo_url: string | null;
-};
 
 export default function Welcome({
     canonical,
-    company,
-    services,
-    licenses,
-    partners,
+
 }: {
     canonical: string;
-    company: CompanyData;
-    services: ServiceData[];
-    licenses: LicenseData[];
-    partners: PartnerData[];
+
 }) {
     const [orderOpen, setOrderOpen] = useState(false);
     const [orderSuccessVisible, setOrderSuccessVisible] = useState(false);
@@ -61,7 +40,7 @@ export default function Welcome({
     const servicesViewportRef = useRef<HTMLDivElement | null>(null);
     const licensesViewportRef = useRef<HTMLDivElement | null>(null);
     const partnersViewportRef = useRef<HTMLDivElement | null>(null);
-
+const [orderSubmitting, setOrderSubmitting] = useState(false);
     const PAGE_SERVICES = 4;
     const PAGE_LICENSES = 3;
     const PAGE_PARTNERS = 4;
@@ -106,7 +85,7 @@ export default function Welcome({
     }, [orderSuccessVisible]);
 
     const canPrevServices = serviceIndex > 0;
-    const canNextServices = 7;
+    const canNextServices = serviceIndex + PAGE_SERVICES < servicesRu.length;
 
     const onPrevServices = () => {
         if (!canPrevServices) return;
@@ -116,12 +95,13 @@ export default function Welcome({
     const onNextServices = () => {
         if (!canNextServices) return;
         setServiceIndex((v) =>
-            Math.min(Math.max(0, services.length - PAGE_SERVICES), v + 1),
+            Math.min(Math.max(0, servicesRu.length - PAGE_SERVICES), v + 1),
         );
     };
 
     const canPrevLicenses = licenseIndex > 0;
-    const canNextLicenses = 7;
+    const canNextLicenses = licenseIndex + PAGE_LICENSES < licensesRu.length;
+;
 
     const onPrevLicenses = () => {
         if (!canPrevLicenses) return;
@@ -131,12 +111,12 @@ export default function Welcome({
     const onNextLicenses = () => {
         if (!canNextLicenses) return;
         setLicenseIndex((v) =>
-            Math.min(Math.max(0, licenses.length - PAGE_LICENSES), v + 1),
+            Math.min(Math.max(0, licensesRu.length - PAGE_LICENSES), v + 1),
         );
     };
 
     const canPrevPartners = partnerIndex > 0;
-    const canNextPartners = 7;
+    const canNextPartners = partnerIndex + PAGE_PARTNERS < partnersRu.length;;
 
     const onPrevPartners = () => {
         if (!canPrevPartners) return;
@@ -146,7 +126,7 @@ export default function Welcome({
     const onNextPartners = () => {
         if (!canNextPartners) return;
         setPartnerIndex((v) =>
-            Math.min(Math.max(0, partners.length - PAGE_PARTNERS), v + 1),
+            Math.min(Math.max(0, partnersRu.length - PAGE_PARTNERS), v + 1),
         );
     };
 
@@ -191,26 +171,86 @@ export default function Welcome({
         setMeta("robots", "index,follow");
         setCanonical(canonical);
       }, [canonical]);
+      const handleOrderSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const errors: Record<string, string> = {};
+
+    if (!orderForm.name.trim()) errors.name = 'Введите имя';
+    if (!orderForm.phone.trim()) errors.phone = 'Введите телефон';
+    if (!orderForm.email.trim()) errors.email = 'Введите e-mail';
+    if (!orderForm.message.trim()) errors.message = 'Введите сообщение';
+    if (!orderForm.policy_accepted) {
+        errors.policy_accepted = 'Необходимо согласие на обработку данных';
+    }
+
+    setOrderErrors(errors);
+
+    if (Object.keys(errors).length > 0) return;
+
+    try {
+        setOrderSubmitting(true);
+
+        const selectedService = servicesRu.find(
+            (service) => String(service.id) === orderForm.service_id
+        );
+
+        const response = await fetch('https://ooomek.vercel.app/api/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: orderForm.name,
+                email: orderForm.email,
+                phone: orderForm.phone,
+                message: orderForm.message,
+                service: selectedService?.title || '',
+            }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Ошибка при отправке сообщения');
+        }
+
+        setOrderOpen(false);
+        resetOrderForm();
+        setOrderSuccessVisible(true);
+    } catch (error) {
+        setOrderErrors({
+            form:
+                error instanceof Error
+                    ? error.message
+                    : 'Ошибка при отправке сообщения',
+        });
+    } finally {
+        setOrderSubmitting(false);
+    }
+};
     return (
         <>
 
 
-            <SiteShell
-                company={company}
-                services={services.map((service) => ({
+                     <SiteShell
+                company={companyRu}
+                services={servicesRu.map((service) => ({
                     id: service.id,
                     title: service.title,
                     slug: service.slug,
                 }))}
             >
+                
+
                 <section className="relative overflow-hidden">
                     <div className="absolute inset-0 bg-[#f5f5f5] bg-[url('/images/background-image.png')] bg-repeat opacity-40" />
 
                     <div className="relative z-10">
                         <SiteHeader
                             email={email}
-                            services={services}
-                            presentationUrl={company.presentation_url}
+                            services={servicesRu}
+                            presentationUrl="pdf/presentation.pdf"
                         />
 
                         <div className="mx-auto flex w-full max-w-[1320px] flex-col px-5 pt-[75px]">
@@ -270,7 +310,7 @@ export default function Welcome({
                         {/* Лента + стрелки по краям */}
                         <div className="relative mt-4 overflow-visible">
                             {/* Левая стрелка (торчит наружу на 50%) */}
-                            {services.length > PAGE_SERVICES ? (
+                            {servicesRu.length > PAGE_SERVICES ? (
                                 <button
                                     type="button"
                                     disabled={!canPrevServices}
@@ -283,7 +323,7 @@ export default function Welcome({
                             ) : null}
 
                             {/* Правая стрелка */}
-                            {services.length > PAGE_SERVICES ? (
+                            {servicesRu.length > PAGE_SERVICES ? (
                                 <button
                                     type="button"
                                     disabled={!canNextServices}
@@ -301,7 +341,7 @@ export default function Welcome({
                                     className="overflow-x-hidden scroll-smooth"
                                 >
                                     <div className="flex gap-0">
-                                        {services.map((item) => (
+                                        {servicesRu.map((item) => (
                                             <a
                                                 key={item.id}
                                                 href={`/services/${item.slug}`}
@@ -331,14 +371,11 @@ export default function Welcome({
                                                             {item.title}
                                                         </h3>
 
-                                                        {/* <div
+                                                        <div
                                                             className="mt-1 text-xs leading-5 text-[#334a64] [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5"
-                                                            dangerouslySetInnerHTML={{
-                                                                __html: DOMPurify.sanitize(
-                                                                    item.short_description || '',
-                                                                ),
-                                                            }}
-                                                        /> */}
+                                                        >
+                                                            {item.short_description}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </a>
@@ -359,7 +396,7 @@ export default function Welcome({
                             canNext={canNextLicenses}
                             onPrev={onPrevLicenses}
                             onNext={onNextLicenses}
-                            hidden={licenses.length <= 3}
+                            hidden={licensesRu.length <= 3}
                         />
                         <div className="relative mt-5 overflow-hidden">
                             <div
@@ -367,7 +404,7 @@ export default function Welcome({
                                 className="overflow-x-hidden scroll-smooth"
                             >
                                 <div className="flex gap-4">
-                                    {licenses.map((item) => (
+                                    {licensesRu.map((item) => (
                                         <article
                                             key={item.id}
                                             className="min-w-full bg-[#12345d] p-5 text-white transition duration-300 hover:-translate-y-1 lg:min-w-[calc((100%-2rem)/3)]"
@@ -390,14 +427,12 @@ export default function Welcome({
                                             <h3 className="mt-4 text-sm leading-tight font-extrabold">
                                                 {item.title}
                                             </h3>
-                                            {/* <div
+                                            <div
                                                 className="mt-3 text-xs leading-6 text-[#d8e5f3]"
-                                                dangerouslySetInnerHTML={{
-                                                    __html: DOMPurify.sanitize(
-                                                        item.description || 'Описание лицензии',
-                                                    ),
-                                                }}
-                                            ></div> */}
+                                            
+                                            >
+                                                {item.description}
+                                            </div>
                                             {item.document_url ? (
                                                 <a
                                                     href={item.document_url}
@@ -415,7 +450,6 @@ export default function Welcome({
                         </div>
                     </div>
                 </section>
-
                 <section className="bg-white py-10">
                     <div className="mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-8">
                         <CarouselHead
@@ -424,7 +458,7 @@ export default function Welcome({
                             canNext={canNextPartners}
                             onPrev={onPrevPartners}
                             onNext={onNextPartners}
-                            hidden={partners.length <= PAGE_PARTNERS}
+                            hidden={partnersRu.length <= PAGE_PARTNERS}
                         />
                         <div className="relative mt-5 overflow-hidden">
                             <div
@@ -432,7 +466,7 @@ export default function Welcome({
                                 className="overflow-x-hidden scroll-smooth"
                             >
                                 <div className="flex gap-4">
-                                    {partners.map((partner) => (
+                                    {partnersRu.map((partner) => (
                                         <a
                                             key={partner.id}
                                             href={partner.url || '#'}
@@ -488,16 +522,15 @@ export default function Welcome({
                         <YandexConstructorMap />
                     </div>
                 </section>
-
                 <SiteFooter
-                    company={company}
-                    services={services.map((service) => ({
+                    company={companyRu}
+                    services={servicesRu.map((service) => ({
                         id: service.id,
                         title: service.title,
                         slug: service.slug,
                     }))}
                 />
-            </SiteShell>
+
 
             <Dialog open={orderOpen} onOpenChange={setOrderOpen}>
                 <DialogContent className="max-h-[92vh] w-[calc(100vw-1.5rem)] overflow-y-auto border-0 bg-[#0b5ea9] p-5 text-white sm:max-w-lg sm:p-6">
@@ -510,15 +543,97 @@ export default function Welcome({
                             обсуждения деталей
                         </DialogDescription>
                     </DialogHeader>
-
+                    <form onSubmit={handleOrderSubmit} className="space-y-4 sm:space-y-5">
+                        <Field label="Ваше имя" id="order-name">
+    <Input
+        id="order-name"
+        value={orderForm.name}
+        onChange={(e) => setOrderField('name', e.target.value)}
+        className="h-11 rounded-none border-0 bg-white text-sm text-black md:h-12 md:text-base"
+    />
+    <FieldError message={orderErrors.name} />
+</Field>
+                        <Field label="Ваш телефон" id="order-phone">
+    <Input
+        id="order-phone"
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        maxLength={18}
+        placeholder="+7 (___) ___-__-__"
+        pattern="\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}"
+        value={orderForm.phone}
+        onChange={(e) =>
+            setOrderField('phone', formatRuPhone(e.target.value))
+        }
+        className="h-11 rounded-none border-0 bg-white text-sm text-black md:h-12 md:text-base"
+    />
+    <FieldError message={orderErrors.phone} />
+</Field>
+                        <Field label="Ваш e-mail" id="order-email">
+    <Input
+        id="order-email"
+        type="email"
+        value={orderForm.email}
+        onChange={(e) => setOrderField('email', e.target.value)}
+        className="h-11 rounded-none border-0 bg-white text-sm text-black md:h-12 md:text-base"
+    />
+    <FieldError message={orderErrors.email} />
+</Field>
+                        <Field label="Выбор услуги" id="order-service">
+    <select
+        id="order-service"
+        value={orderForm.service_id}
+        onChange={(e) => setOrderField('service_id', e.target.value)}
+        className="h-11 w-full rounded-none border-0 bg-white px-3 text-sm text-black md:h-12 md:text-base"
+    >
+        <option value="">Выберите услугу</option>
+        {servicesRu.map((service) => (
+            <option key={service.id} value={service.id}>
+                {service.title}
+            </option>
+        ))}
+    </select>
+    <FieldError message={orderErrors.service_id} />
+</Field>
+                        <Field label="Краткое описание задачи" id="order-message">
+    <textarea
+        id="order-message"
+        value={orderForm.message}
+        onChange={(e) => setOrderField('message', e.target.value)}
+        className="min-h-24 w-full rounded-none border-0 bg-white px-3 py-2 text-sm text-black md:min-h-28 md:text-base"
+    />
+    <FieldError message={orderErrors.message} />
+</Field>
+                        <label className="flex items-start gap-3 text-sm leading-5 text-[#d8e5f3]">
+    <input
+        type="checkbox"
+        checked={orderForm.policy_accepted}
+        onChange={(e) =>
+            setOrderField('policy_accepted', e.target.checked)
+        }
+        className="mt-0.5 h-4 w-4 shrink-0 rounded border-white/60 bg-transparent accent-white"
+    />
+    Я согласен(а) на обработку данных в соответствии с политикой конфиденциальности
+</label>
+<FieldError message={orderErrors.policy_accepted} />
+<FieldError message={orderErrors.form} />
+<Button
+    type="submit"
+    disabled={orderSubmitting}
+    className="h-11 w-full rounded-none bg-white text-lg font-bold text-black hover:bg-[#f1f5fb] disabled:opacity-70 md:h-12 md:text-xl"
+>
+    {orderSubmitting ? 'Отправка...' : 'Обсудить детали'}
+</Button>
+                    </form>
                 </DialogContent>
             </Dialog>
-
             {orderSuccessVisible ? (
                 <div className="fixed right-4 bottom-4 z-60 rounded-md border border-[#0f3561] bg-white px-4 py-3 text-sm font-semibold text-[#0f3561] shadow-lg">
                     Сообщение отправлено. Мы скоро свяжемся с вами.
                 </div>
             ) : null}
+             </SiteShell>
         </>
     );
 }
