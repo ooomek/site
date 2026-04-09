@@ -73,6 +73,7 @@ export function ContentPageLayout({
     return i >= 0 ? i : 0;
   }, [services, initialSidebarServiceId]);
   const [sidebarIndex, setSidebarIndex] = useState<number>(initialIndex);
+const [orderSubmitting, setOrderSubmitting] = useState(false);
 
   const email = company.email || "info@expert-mek.com";
   const canPrevSidebar = sidebarIndex > 0;
@@ -154,6 +155,64 @@ export function ContentPageLayout({
     setMeta("robots", "index,follow");
     setCanonical(canonical);
   }, [canonical]);
+    const handleOrderSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+  
+      const errors: Record<string, string> = {};
+  
+      if (!orderForm.name.trim()) errors.name = 'Введите имя';
+      if (!orderForm.phone.trim()) errors.phone = 'Введите телефон';
+      if (!orderForm.email.trim()) errors.email = 'Введите e-mail';
+      if (!orderForm.message.trim()) errors.message = 'Введите сообщение';
+      if (!orderForm.policy_accepted) {
+          errors.policy_accepted = 'Необходимо согласие на обработку данных';
+      }
+  
+      setOrderErrors(errors);
+  
+      if (Object.keys(errors).length > 0) return;
+  
+      try {
+          setOrderSubmitting(true);
+  
+          const selectedService = services.find(
+              (service) => String(service.id) === orderForm.service_id
+          );
+  
+          const response = await fetch('https://ooomek.vercel.app/api/contact', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  name: orderForm.name,
+                  email: orderForm.email,
+                  phone: orderForm.phone,
+                  message: orderForm.message,
+                  service: selectedService?.title || '',
+              }),
+          });
+  
+          const result = await response.json();
+  
+          if (!response.ok || !result.success) {
+              throw new Error(result.message || 'Ошибка при отправке сообщения');
+          }
+  
+          setOrderOpen(false);
+          resetOrderForm();
+          setOrderSuccessVisible(true);
+      } catch (error) {
+          setOrderErrors({
+              form:
+                  error instanceof Error
+                      ? error.message
+                      : 'Ошибка при отправке сообщения',
+          });
+      } finally {
+          setOrderSubmitting(false);
+      }
+  };
   return (
     <>
       <SiteShell company={company} services={services}>
@@ -304,7 +363,102 @@ export function ContentPageLayout({
             </div>
           </div>
         </section>
-
+<Dialog open={orderOpen} onOpenChange={setOrderOpen}>
+                <DialogContent className="max-h-[92vh] w-[calc(100vw-1.5rem)] overflow-y-auto border-0 bg-[#0b5ea9] p-5 text-white sm:max-w-lg sm:p-6">
+                    <DialogHeader>
+                        <DialogTitle className="pr-8 text-2xl font-extrabold md:text-3xl">
+                            Закажите сопровождение
+                        </DialogTitle>
+                        <DialogDescription className="text-sm text-[#d8e5f3] md:text-base">
+                            Заполните форму, чтобы мы с вами связались для
+                            обсуждения деталей
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleOrderSubmit} className="space-y-4 sm:space-y-5">
+                        <Field label="Ваше имя" id="order-name">
+    <Input
+        id="order-name"
+        value={orderForm.name}
+        onChange={(e) => setOrderField('name', e.target.value)}
+        className="h-11 rounded-none border-0 bg-white text-sm text-black md:h-12 md:text-base"
+    />
+    <FieldError message={orderErrors.name} />
+</Field>
+                        <Field label="Ваш телефон" id="order-phone">
+    <Input
+        id="order-phone"
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        maxLength={18}
+        placeholder="+7 (___) ___-__-__"
+        pattern="\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}"
+        value={orderForm.phone}
+        onChange={(e) =>
+            setOrderField('phone', formatRuPhone(e.target.value))
+        }
+        className="h-11 rounded-none border-0 bg-white text-sm text-black md:h-12 md:text-base"
+    />
+    <FieldError message={orderErrors.phone} />
+</Field>
+                        <Field label="Ваш e-mail" id="order-email">
+    <Input
+        id="order-email"
+        type="email"
+        value={orderForm.email}
+        onChange={(e) => setOrderField('email', e.target.value)}
+        className="h-11 rounded-none border-0 bg-white text-sm text-black md:h-12 md:text-base"
+    />
+    <FieldError message={orderErrors.email} />
+</Field>
+                        <Field label="Выбор услуги" id="order-service">
+    <select
+        id="order-service"
+        value={orderForm.service_id}
+        onChange={(e) => setOrderField('service_id', e.target.value)}
+        className="h-11 w-full rounded-none border-0 bg-white px-3 text-sm text-black md:h-12 md:text-base"
+    >
+        <option value="">Выберите услугу</option>
+        {services.map((service) => (
+            <option key={service.id} value={service.id}>
+                {service.title}
+            </option>
+        ))}
+    </select>
+    <FieldError message={orderErrors.service_id} />
+</Field>
+                        <Field label="Краткое описание задачи" id="order-message">
+    <textarea
+        id="order-message"
+        value={orderForm.message}
+        onChange={(e) => setOrderField('message', e.target.value)}
+        className="min-h-24 w-full rounded-none border-0 bg-white px-3 py-2 text-sm text-black md:min-h-28 md:text-base"
+    />
+    <FieldError message={orderErrors.message} />
+</Field>
+                        <label className="flex items-start gap-3 text-sm leading-5 text-[#d8e5f3]">
+    <input
+        type="checkbox"
+        checked={orderForm.policy_accepted}
+        onChange={(e) =>
+            setOrderField('policy_accepted', e.target.checked)
+        }
+        className="mt-0.5 h-4 w-4 shrink-0 rounded border-white/60 bg-transparent accent-white"
+    />
+    Я согласен(а) на обработку данных в соответствии с политикой конфиденциальности
+</label>
+<FieldError message={orderErrors.policy_accepted} />
+<FieldError message={orderErrors.form} />
+<Button
+    type="submit"
+    disabled={orderSubmitting}
+    className="h-11 w-full rounded-none bg-white text-lg font-bold text-black hover:bg-[#f1f5fb] disabled:opacity-70 md:h-12 md:text-xl"
+>
+    {orderSubmitting ? 'Отправка...' : 'Обсудить детали'}
+</Button>
+                    </form>
+                </DialogContent>
+            </Dialog>
         <SiteFooter company={company} services={services} />
       </SiteShell>
 

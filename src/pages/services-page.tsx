@@ -1,5 +1,6 @@
 import { ContentPageLayout, type ContentPageBreadcrumb, type ContentPageData, type ServiceSideItem } from '../components/site/content-page-layout';
 import type { CompanyData } from '../components/site/types';
+import { companyRu, servicesRu } from '../data/ru';
 
 type ServiceTile = ServiceSideItem & {
     image_url?: string | null;
@@ -29,8 +30,8 @@ export default function ServicesPage({
 
     return (
         <ContentPageLayout
-            company={company}
-            services={services}
+            company={companyRu}
+            services={servicesRu}
             page={page}
             breadcrumb={breadcrumb}
             canonical={canonical}
@@ -40,7 +41,7 @@ export default function ServicesPage({
             contentSlot={
                 <section className="border border-[#d4d4d4] bg-[#f3f3f3]">
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-                        {services.map((service) => (
+                        {servicesRu.map((service) => (
                             <a
                                 key={service.id}
                                 href={`/services/${service.slug}`}
