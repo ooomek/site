@@ -56,8 +56,6 @@ export function ContentPageLayout({
   page,
   breadcrumb,
   canonical,
-  robots = "index,follow",
-  description,
   initialSidebarServiceId,
   showSidebar = true,
   contentSlot,

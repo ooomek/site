@@ -1,5 +1,4 @@
-import { ContentPageLayout, type ContentPageBreadcrumb, type ContentPageData, type ServiceSideItem } from '../components/site/content-page-layout';
-import type { CompanyData } from '../components/site/types';
+import { ContentPageLayout } from '../components/site/content-page-layout';
 import { companyRu, servicesRu, contactsPageRu, contactsPageRuBreadcrumb } from '../data/ru';
 
 export default function ContactPage({
@@ -7,10 +6,7 @@ export default function ContactPage({
 
 }: {
     canonical: string;
-    company: CompanyData;
-    services: ServiceSideItem[];
-    page: ContentPageData;
-    breadcrumb: ContentPageBreadcrumb;
+
 }) {
     return (
         <ContentPageLayout

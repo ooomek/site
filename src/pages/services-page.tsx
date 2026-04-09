@@ -1,19 +1,13 @@
-import { ContentPageLayout, type ContentPageBreadcrumb, type ContentPageData, type ServiceSideItem } from '../components/site/content-page-layout';
-import type { CompanyData } from '../components/site/types';
+import { ContentPageLayout, type ContentPageBreadcrumb, type ContentPageData } from '../components/site/content-page-layout';
 import { companyRu, servicesRu } from '../data/ru';
 
-type ServiceTile = ServiceSideItem & {
-    image_url?: string | null;
-};
+
 
 export default function ServicesPage({
     canonical,
-    company,
-    services,
 }: {
     canonical: string;
-    company: CompanyData;
-    services: ServiceTile[];
+
 }) {
     const page: ContentPageData = {
         title: 'Услуги',

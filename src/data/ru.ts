@@ -24,7 +24,7 @@ export const servicesRu: ServiceData[] = [
       "Независимая комплексная оценка технического состояния и готовности предприятия к реализации проектов в атомной отрасли.",
     slug: "technical-audit",
     icon_url: "/icons/icon-1.png",
-    image_url: null,
+    image_url: "images/service-image.png",
   },
   {
     id: 2,
@@ -33,7 +33,7 @@ export const servicesRu: ServiceData[] = [
       "Обеспечение промышленной безопасности за счет соблюдения требований нормативных актов и проведения технической диагностики.",
     slug: "industrial-safety",
     icon_url: "/icons/icon-2.png",
-    image_url: null,
+    image_url: "images/service-image.png",
   },
   {
     id: 3,
@@ -43,7 +43,7 @@ export const servicesRu: ServiceData[] = [
       "Оценка соответствия оборудования, комплектующих, материалов и полуфабрикатов для АЭС в рамках международных проектов.",
     slug: "equipment-conformity-assessment",
     icon_url: "/icons/icon-3.png",
-    image_url: null,
+    image_url: "images/service-image.png",
   },
   {
     id: 4,
@@ -52,7 +52,7 @@ export const servicesRu: ServiceData[] = [
       "Комплексное сопровождение процесса изготовления и поставки оборудования с контролем сроков и рисков.",
     slug: "project-support",
     icon_url: "/icons/icon-4.png",
-    image_url: null,
+    image_url: "images/service-image.png",
   },
   {
     id: 5,
@@ -62,7 +62,7 @@ export const servicesRu: ServiceData[] = [
       "Проверка соответствия отгружаемого оборудования условиям договора по количеству, качеству, упаковке и маркировке.",
     slug: "customer-input-control",
     icon_url: "/icons/icon-5.png",
-    image_url: null,
+    image_url: "images/service-image.png",
   },
   {
     id: 6,
@@ -71,7 +71,7 @@ export const servicesRu: ServiceData[] = [
       "Подготовка, сопровождение сертификации, документации, СМК и производственных процессов для атомной отрасли.",
     slug: "technical-organizational-support",
     icon_url: "/icons/icon-6.png",
-    image_url: null,
+    image_url: "images/service-image.png",
   },
 ];
 
@@ -82,7 +82,7 @@ export const licensesRu: LicenseData[] = [
     description:
       "На эксплуатацию радиационных источников, пунктов хранения ядерных материалов, радиоактивных веществ и радиоактивных отходов.",
     image_url: "licenses/5298.png",
-    document_url: null,
+    document_url: "pdf/5298.pdf",
   },
   {
     id: 5023,
@@ -90,7 +90,7 @@ export const licensesRu: LicenseData[] = [
     description:
       "На эксплуатацию ядерных установок, включая атомные станции, суда и другие транспортные средства с ядерными реакторами.",
     image_url: "licenses/5023.png",
-    document_url: null,
+    document_url: "pdf/5023.pdf",
   },
   {
     id: 3,
@@ -98,7 +98,7 @@ export const licensesRu: LicenseData[] = [
     description:
       "Деятельность по проведению экспертизы промышленной безопасности объектов и документации.",
     image_url: "licenses/00109-78.png",
-    document_url: null,
+    document_url: "pdf/vipeska.pdf",
   },
 ];
 
