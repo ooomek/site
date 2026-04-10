@@ -9,7 +9,9 @@ import IndustrialSafetyPage from './pages/services/industrial-safety/page';
 import ProjectSupportPage from './pages/services/project-support/page';
 import TechnicalAuditPage from './pages/services/technical-audit/page';
 import TechnicalOrganizationPage from './pages/services/technical-organizational-support/page';
-
+import ExamPage from './pages/exam-page';
+import AdminLoginPage from './pages/admin-login-page';
+import AdminDashboardPage from './pages/admin-dashboard-page';
 const SITE_URL = 'https://expert-mek.com';
 
 export default function App() {
@@ -82,6 +84,9 @@ export default function App() {
             />
           }
         />
+        <Route path="/exam" element={<ExamPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
       </Routes>
     </BrowserRouter>
   );
