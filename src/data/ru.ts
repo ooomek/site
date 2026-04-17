@@ -24,7 +24,7 @@ export const servicesRu: ServiceData[] = [
       "Независимая комплексная оценка технического состояния и готовности предприятия к реализации проектов в атомной отрасли.",
     slug: "technical-audit",
     icon_url: "/icons/icon-1.png",
-    image_url: "images/services/технический аудит.jpg",
+    image_url: "images/services/technical-audit.jpg",
   },
   {
     id: 2,
@@ -33,7 +33,7 @@ export const servicesRu: ServiceData[] = [
       "Обеспечение промышленной безопасности за счет соблюдения требований нормативных актов и проведения технической диагностики.",
     slug: "industrial-safety",
     icon_url: "/icons/icon-2.png",
-    image_url: "images/services/промышленна безопасность 1.jpg",
+    image_url: "images/services/industrial-safety.jpg",
   },
   {
     id: 3,
@@ -43,7 +43,7 @@ export const servicesRu: ServiceData[] = [
       "Оценка соответствия оборудования, комплектующих, материалов и полуфабрикатов для АЭС в рамках международных проектов.",
     slug: "equipment-conformity-assessment",
     icon_url: "/icons/icon-3.png",
-    image_url: "images/services/оценка соответствия.jpg",
+    image_url: "images/services/equipment-conformity-assessment.jpg",
   },
   {
     id: 4,
@@ -52,7 +52,7 @@ export const servicesRu: ServiceData[] = [
       "Комплексное сопровождение процесса изготовления и поставки оборудования с контролем сроков и рисков.",
     slug: "project-support",
     icon_url: "/icons/icon-4.png",
-    image_url: "images/services/сопровождение проекта.jpg",
+    image_url: "images/services/project-support.jpg",
   },
   {
     id: 5,
@@ -62,7 +62,7 @@ export const servicesRu: ServiceData[] = [
       "Проверка соответствия отгружаемого оборудования условиям договора по количеству, качеству, упаковке и маркировке.",
     slug: "customer-input-control",
     icon_url: "/icons/icon-5.png",
-    image_url: "images/services/подтвержение соответствия.jpg",
+    image_url: "images/services/public/services/customer-input-control.jpg",
   },
   {
     id: 6,
@@ -71,7 +71,7 @@ export const servicesRu: ServiceData[] = [
       "Подготовка, сопровождение сертификации, документации, СМК и производственных процессов для атомной отрасли.",
     slug: "technical-organizational-support",
     icon_url: "/icons/icon-6.png",
-    image_url: "images/services/техническое сопровождение проекта.jpg",
+    image_url: "images/services/technical-organizational-support.jpg",
   },
 ];
 
