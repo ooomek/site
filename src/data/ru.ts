@@ -62,7 +62,7 @@ export const servicesRu: ServiceData[] = [
       "Проверка соответствия отгружаемого оборудования условиям договора по количеству, качеству, упаковке и маркировке.",
     slug: "customer-input-control",
     icon_url: "/icons/icon-5.png",
-    image_url: "services/public/services/customer-input-control.jpg",
+    image_url: "services/customer-input-control.jpg",
   },
   {
     id: 6,
