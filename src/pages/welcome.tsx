@@ -5,7 +5,7 @@ import { SiteHeader } from "../components/site/site-header";
 import { SiteShell } from "../components/site/site-shell";
 
 import { Button } from "../components/ui/button";
-import { companyRu, servicesRu, licensesRu, partnersRu } from "../data/ru";
+import { companyRu, servicesRu, licensesRu, partnersRu, certificateRu } from "../data/ru";
 import {
   Dialog,
   DialogContent,
@@ -394,6 +394,70 @@ export default function Welcome({ canonical }: { canonical: string }) {
                     loading="lazy"
                     decoding="async"
                     className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <span className="text-sm text-[#12345d]">
+                    Нет изображения
+                  </span>
+                )}
+              </div>
+
+              <h3 className="mt-4 text-sm leading-tight font-extrabold">
+                {item.title}
+              </h3>
+
+              <div className="mt-3 text-xs leading-6 text-[#d8e5f3]">
+                {item.description}
+              </div>
+
+              {item.document_url ? (
+                <a
+                  href={item.document_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-4 inline-flex text-sm font-semibold underline underline-offset-4"
+                >
+                  Открыть документ
+                </a>
+              ) : null}
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ <section className="bg-[#0b5ea9] py-10">
+  <div className="mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-8">
+    <CarouselHead
+      title="Сертификаты соответствия"
+      dark
+      canPrev={canPrevLicenses}
+      canNext={canNextLicenses}
+      onPrev={onPrevLicenses}
+      onNext={onNextLicenses}
+      hidden={certificateRu.length <= 3}
+    />
+
+    <div className="relative mt-5 overflow-hidden">
+      <div
+        ref={licensesViewportRef}
+        className="overflow-x-auto scroll-smooth lg:overflow-x-hidden"
+      >
+        <div className="flex gap-4">
+          {certificateRu.map((item) => (
+            <article
+              key={item.id}
+              className="min-w-[85%] bg-[#12345d] p-5 text-white transition duration-300 hover:-translate-y-1 sm:min-w-[60%] lg:min-w-[calc((100%-2rem)/3)]"
+            >
+              <div className="mx-auto flex h-56 w-44 items-center justify-center overflow-hidden bg-white">
+                {item.image_url ? (
+                  <img
+                    src={item.image_url}
+                    alt={item.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full"
                   />
                 ) : (
                   <span className="text-sm text-[#12345d]">

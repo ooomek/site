@@ -101,7 +101,25 @@ export const licensesRu: LicenseData[] = [
     document_url: "pdf/vipeska.pdf",
   },
 ];
+export const certificateRu: LicenseData[] = [
+  {
+    id: 205,
+    title: "Сертификат соответствия № RA.RU.13HA77-0205 от 06.04.2026",
+    description:
+      "На соответствие требованиям ГОСТ Р ИСО 9001-2015. Применительно к следующим видам деятельности: организация и проведение оценки соответствия в форме приемки и испытаний продукции, предназначенной для ОИАЭ; организация и проведение экспертизы безопасности (экспертизы обоснования безопасности) объектов использования атомной энергии и (или) видов деятельности в области использования атомной энергии.",
+    image_url: "certificates/13HA77-0205.png",
+    document_url: "certificates/13HA77-0205.png",
+  },
+  {
+    id: 12315,
+    title: "Сертификат соответствия № 012315 QM101 от 06.04.2026",
+    description:
+      "На соответствие требованиям ISO 9001:2015. Применительно к следующим видам деятельности: Organising and conducting conformity assessment in the form of acceptance and testing of products intended for nuclear facilities; Organising and conducting safety assessments (safety justification reviews) of nuclear facilities and/or activities in the field of nuclear energy",
+    image_url: "certificates/012315 QM101.png",
+    document_url: "certificates/012315 QM101.png",
+  },
 
+];
 export const partnersRu: PartnerData[] = [
   {
     id: 1,
