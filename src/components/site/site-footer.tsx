@@ -24,7 +24,7 @@ export function SiteFooter({ company, services }: Props) {
                             {company.actual_address || '199155, г. Санкт-Петербург, наб. Макарова, д. 60, ст.1'}
                         </p>
                         <p>
-                            <span className="font-semibold text-white">Телефон:</span> {company.phone || '+7 (000) 000-00-00'}
+                            <span className="font-semibold text-white">Телефон:</span> {company.phone || '+7 812 6792749'}
                         </p>
                         <p>
                             <span className="font-semibold text-white">Электронная почта:</span> {email}
