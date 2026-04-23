@@ -158,7 +158,7 @@ export default function ExamPage() {
   };
 
   if (result) {
-    const passed = result.score >= Math.ceil(result.total_questions * 0.7);
+    // const passed = result.score >= Math.ceil(result.total_questions * 0.7);
 
     return (
       <div className="min-h-screen bg-slate-50">

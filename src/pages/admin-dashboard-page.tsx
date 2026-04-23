@@ -86,13 +86,13 @@ function formatChoiceLetter(choice: string | null) {
   }
 }
 
-function getChoiceLabel(answer: ExamDetailsAnswer, choice: string | null) {
-  const letter = formatChoiceLetter(choice);
-  const text = getChoiceText(answer, choice);
+// function getChoiceLabel(answer: ExamDetailsAnswer, choice: string | null) {
+//   const letter = formatChoiceLetter(choice);
+//   const text = getChoiceText(answer, choice);
 
-  if (!choice) return '-';
-  return `${letter} — ${text}`;
-}
+//   if (!choice) return '-';
+//   return `${letter} — ${text}`;
+// }
 function formatDate(value: string | null) {
   if (!value) return '-';
 
@@ -102,13 +102,13 @@ function formatDate(value: string | null) {
   return date.toLocaleString();
 }
 
-function getChoiceText(answer: ExamDetailsAnswer, choice: string | null) {
-  if (!choice) return '-';
-  if (choice === 'A') return answer.choice_a;
-  if (choice === 'B') return answer.choice_b;
-  if (choice === 'C') return answer.choice_c;
-  return '-';
-}
+// function getChoiceText(answer: ExamDetailsAnswer, choice: string | null) {
+//   if (!choice) return '-';
+//   if (choice === 'A') return answer.choice_a;
+//   if (choice === 'B') return answer.choice_b;
+//   if (choice === 'C') return answer.choice_c;
+//   return '-';
+// }
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
