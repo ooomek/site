@@ -12,6 +12,7 @@ import TechnicalOrganizationPage from './pages/services/technical-organizational
 import ExamPage from './pages/exam-page';
 import AdminLoginPage from './pages/admin-login-page';
 import AdminDashboardPage from './pages/admin-dashboard-page';
+import AdminQuestionsPage from './pages/admin-questions-page';
 const SITE_URL = 'https://expert-mek.com';
 
 export default function App() {
@@ -87,6 +88,7 @@ export default function App() {
         <Route path="/exam" element={<ExamPage />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+        <Route path="/admin/questions" element={<AdminQuestionsPage />} />
       </Routes>
     </BrowserRouter>
   );
