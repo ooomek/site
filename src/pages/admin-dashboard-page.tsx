@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import { supabase } from '../services/supabase';
@@ -90,7 +90,6 @@ function getChoiceText(answer: ExamDetailsAnswer, choice: string | null) {
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
-  const pdfRef = useRef<HTMLDivElement | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [signOutLoading, setSignOutLoading] = useState(false);
