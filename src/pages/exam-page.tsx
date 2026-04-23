@@ -186,7 +186,7 @@ export default function ExamPage() {
                   <p className="mt-1 text-blue-100">{workPosition}</p>
                 </div>
 
-                <div
+                {/* <div
                   className={`inline-flex w-fit rounded-full px-4 py-2 text-sm font-semibold ${
                     passed
                       ? 'bg-emerald-100 text-emerald-700'
@@ -194,7 +194,7 @@ export default function ExamPage() {
                   }`}
                 >
                   {passed ? 'Экзамен пройден' : 'Экзамен не пройден'}
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -212,13 +212,13 @@ export default function ExamPage() {
                   {Math.round((result.score / result.total_questions) * 100)}%
                 </p>
               </div>
-
+{/* 
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
                 <p className="text-sm text-slate-500">Статус</p>
                 <p className="mt-2 text-3xl font-extrabold text-slate-900">
                   {result.status}
                 </p>
-              </div>
+              </div> */}
             </div>
 
             <div className="border-t border-slate-200 px-6 py-5 md:px-8">

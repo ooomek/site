@@ -71,6 +71,28 @@ function formatStatus(status: string) {
       return status;
   }
 }
+function formatChoiceLetter(choice: string | null) {
+  if (!choice) return '-';
+
+  switch (choice) {
+    case 'A':
+      return 'А';
+    case 'B':
+      return 'Б';
+    case 'C':
+      return 'В';
+    default:
+      return choice;
+  }
+}
+
+function getChoiceLabel(answer: ExamDetailsAnswer, choice: string | null) {
+  const letter = formatChoiceLetter(choice);
+  const text = getChoiceText(answer, choice);
+
+  if (!choice) return '-';
+  return `${letter} — ${text}`;
+}
 function formatDate(value: string | null) {
   if (!value) return '-';
 
@@ -313,10 +335,10 @@ const drawQuestionBlock = (answer: ExamDetailsAnswer) => {
 
   const questionText = `${answer.question_order}. ${answer.question_text}`;
   const aText = `A: ${answer.choice_a}`;
-  const bText = `B: ${answer.choice_b}`;
-  const cText = `C: ${answer.choice_c}`;
-  const selectedText = `Выбрано: ${answer.selected_choice ?? '-'} — ${getChoiceText(answer, answer.selected_choice)}`;
-  const correctText = `Правильный ответ: ${answer.correct_choice} — ${getChoiceText(answer, answer.correct_choice)}`;
+  const bText = `Б: ${answer.choice_b}`;
+  const cText = `В: ${answer.choice_c}`;
+const selectedText = `Выбрано: ${formatChoiceLetter(answer.selected_choice)}`;
+const correctText = `Правильный ответ: ${formatChoiceLetter(answer.correct_choice)}`;
   const finalText = `Результат: ${resultText}`;
 
   const contentHeight =
@@ -576,25 +598,24 @@ return (
                 </p>
 
                 <div className="space-y-1 text-sm">
-                  <p><strong>A:</strong> {answer.choice_a}</p>
-                  <p><strong>B:</strong> {answer.choice_b}</p>
-                  <p><strong>C:</strong> {answer.choice_c}</p>
-                </div>
+                <p><strong>А:</strong> {answer.choice_a}</p>
+                <p><strong>Б:</strong> {answer.choice_b}</p>
+                <p><strong>В:</strong> {answer.choice_c}</p>
+              </div>
 
-                <div className="mt-3 text-sm">
-                  <p>
-                    <strong>Выбрано:</strong> {answer.selected_choice ?? '-'}
-                  </p>
-                  <p>
-                    <strong>Правильный ответ:</strong> {answer.correct_choice}
-                  </p>
-                  <p>
-  <strong>Результат:</strong>{' '}
-  <span className={answer.is_correct ? 'text-green-600' : 'text-red-600'}>
-    {answer.is_correct ? 'Правильно' : 'Неправильно'}
-  </span>
-</p>
-                </div>
+<div className="mt-3 text-sm">
+  <p>
+<strong>Выбрано:</strong> {formatChoiceLetter(answer.selected_choice)}
+  </p>
+  <p>
+<strong>Правильный ответ:</strong> {formatChoiceLetter(answer.correct_choice)}  </p>
+  <p>
+    <strong>Результат:</strong>{' '}
+    <span className={answer.is_correct ? 'text-green-600' : 'text-red-600'}>
+      {answer.is_correct ? 'Правильно' : 'Неправильно'}
+    </span>
+  </p>
+</div>
               </div>
             ))}
           </div>
