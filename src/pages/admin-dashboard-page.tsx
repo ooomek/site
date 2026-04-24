@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import { supabase } from '../services/supabase';
-
+import { withRetry } from '../utils/supabase-request';
+import { apiRequest, removeAccessToken } from '../services/api';
 type ExamResultRow = {
   attempt_id: string;
   full_name: string;
@@ -39,6 +40,44 @@ type ExamDetails = {
   };
   answers: ExamDetailsAnswer[];
 };
+
+// src/utils/supabase-request.ts
+
+export function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function withSupabaseRetry<T>(
+  fn: (signal: AbortSignal) => PromiseLike<T>,
+  retries = 2,
+  timeoutMs = 10000
+): Promise<T> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const controller = new AbortController();
+
+    const timeoutId = window.setTimeout(() => {
+      controller.abort();
+    }, timeoutMs);
+
+    try {
+      const result = await Promise.resolve(fn(controller.signal));
+      window.clearTimeout(timeoutId);
+      return result;
+    } catch (error) {
+      window.clearTimeout(timeoutId);
+      lastError = error;
+
+      if (attempt < retries) {
+        await wait(1000);
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 async function loadFontAsBase64(url: string): Promise<string> {
   const response = await fetch(url);
 
@@ -122,49 +161,36 @@ export default function AdminDashboardPage() {
   const [pdfLoadingId, setPdfLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAndLoad = async () => {
-      try {
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
+const checkAndLoad = async () => {
+  try {
+    await apiRequest('/api/auth/user');
 
-        if (userError || !user) {
-          navigate('/admin/login', { replace: true });
-          return;
-        }
+    const response = await apiRequest<{ data: ExamResultRow[] } | ExamResultRow[]>(
+  '/api/dashboard/results'
+);
 
-        const { data, error } = await supabase.rpc('get_exam_results');
+const rowsData = Array.isArray(response) ? response : response.data;
 
-        if (error) {
-          throw new Error(error.message);
-        }
 
-        setRows((data ?? []) as ExamResultRow[]);
-      } catch (err) {
-        const message =
-          err instanceof Error ? err.message : 'Failed to load dashboard.';
-        setError(message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setRows(rowsData ?? []);
+  } catch (err) {
+    removeAccessToken();
+    navigate('/admin/login', { replace: true });
+  } finally {
+    setLoading(false);
+  }
+};
 
     checkAndLoad();
   }, [navigate]);
 
-  const fetchExamDetails = async (attemptId: string) => {
-    const { data, error } = await supabase.rpc('get_exam_result_details', {
-      p_attempt_id: attemptId,
-    });
+const fetchExamDetails = async (attemptId: string) => {
+  const response = await apiRequest<{ data: ExamDetails } | ExamDetails>(
+    `/api/dashboard/results/${attemptId}`
+  );
 
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return data as ExamDetails;
-  };
-
+  return 'data' in response ? response.data : response;
+};
   const handleViewDetails = async (attemptId: string) => {
     try {
       setDetailsLoading(true);
@@ -470,20 +496,25 @@ const correctText = `Правильный ответ: ${formatChoiceLetter(answe
   }
 };
 
-  const handleLogout = async () => {
-    try {
-      setSignOutLoading(true);
-      await supabase.auth.signOut();
-      navigate('/admin/login', { replace: true });
-    } finally {
-      setSignOutLoading(false);
-    }
-  };
+const handleLogout = async () => {
+  setSignOutLoading(true);
 
+  try {
+    await apiRequest('/api/auth/logout', {
+      method: 'POST',
+    });
+  } catch {
+    // ignore
+  } finally {
+    removeAccessToken();
+    setSignOutLoading(false);
+    navigate('/admin/login', { replace: true });
+  }
+};
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-10">
-        <p>Loading dashboard...</p>
+        <p>Загрузка панели управления...</p>
       </div>
     );
   }

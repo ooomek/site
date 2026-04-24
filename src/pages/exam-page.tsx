@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, type FormEvent } from 'react';
 import { supabase } from '../services/supabase';
-
+import { apiRequest } from '../services/api';
 type ExamQuestion = {
   question_id: number;
   question_order: number;
@@ -67,16 +67,18 @@ export default function ExamPage() {
     try {
       setLoading(true);
 
-      const { data, error } = await supabase.rpc('start_exam', {
-        p_full_name: fullName.trim(),
-        p_work_position: workPosition.trim(),
-      });
+const response = await apiRequest<{ data: StartExamResponse } | StartExamResponse>(
+  '/api/exam/start',
+  {
+    method: 'POST',
+    body: JSON.stringify({
+      fullName: fullName.trim(),
+      workPosition: workPosition.trim(),
+    }),
+  }
+);
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      const examData = data as StartExamResponse;
+const examData = 'data' in response ? response.data : response;
 
       setAttemptId(examData.attempt_id);
       setQuestions(examData.questions || []);
@@ -138,16 +140,20 @@ export default function ExamPage() {
         payload[questionId] = choice;
       }
 
-      const { data, error } = await supabase.rpc('submit_exam', {
-        p_attempt_id: attemptId,
-        p_answers: payload,
-      });
+const response = await apiRequest<{ data: SubmitExamResponse } | SubmitExamResponse>(
+  '/api/exam/submit',
+  {
+    method: 'POST',
+    body: JSON.stringify({
+      attemptId,
+      answers: payload,
+    }),
+  }
+);
 
-      if (error) {
-        throw new Error(error.message);
-      }
+const submitData = 'data' in response ? response.data : response;
 
-      setResult(data as SubmitExamResponse);
+setResult(submitData);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Failed to submit exam.';

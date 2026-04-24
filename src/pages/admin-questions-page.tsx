@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabase';
-
+import { apiRequest, removeAccessToken } from '../services/api';
 type QuestionRow = {
   id: number;
   question_text: string;
@@ -26,38 +26,28 @@ export default function AdminQuestionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [questions, setQuestions] = useState<QuestionRow[]>([]);
+useEffect(() => {
+  const loadQuestions = async () => {
+    try {
+      await apiRequest('/api/auth/user');
 
-  useEffect(() => {
-    const loadQuestions = async () => {
-      try {
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
+      const response = await apiRequest<{ data: QuestionRow[] } | QuestionRow[]>(
+        '/api/questions'
+      );
 
-        if (userError || !user) {
-          navigate('/admin/login', { replace: true });
-          return;
-        }
+      const questionsData = Array.isArray(response) ? response : response.data;
 
-        const { data, error } = await supabase.rpc('get_all_questions');
+      setQuestions(questionsData ?? []);
+    } catch (err) {
+      removeAccessToken();
+      navigate('/admin/login', { replace: true });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        if (error) {
-          throw new Error(error.message);
-        }
-
-        setQuestions((data ?? []) as QuestionRow[]);
-      } catch (err) {
-        const message =
-          err instanceof Error ? err.message : 'Ошибка загрузки вопросов.';
-        setError(message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadQuestions();
-  }, [navigate]);
+  loadQuestions();
+}, [navigate]);
 
   if (loading) {
     return (

@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../services/supabase';
+import { apiRequest, getAccessToken, setAccessToken } from '../services/api';
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
@@ -11,17 +11,9 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (session) {
-        navigate('/admin/dashboard', { replace: true });
-      }
-    };
-
-    checkSession();
+    if (getAccessToken()) {
+      navigate('/admin/dashboard', { replace: true });
+    }
   }, [navigate]);
 
   const handleLogin = async (e: FormEvent) => {
@@ -29,27 +21,27 @@ export default function AdminLoginPage() {
     setError('');
 
     if (!email.trim() || !password.trim()) {
-      setError('Please enter email and password.');
+      setError('Введите email и пароль.');
       return;
     }
 
     try {
       setLoading(true);
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
+      const result = await apiRequest<{
+        session: { access_token: string };
+      }>('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
       });
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
+      setAccessToken(result.session.access_token);
       navigate('/admin/dashboard', { replace: true });
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Login failed.';
-      setError(message);
+      setError(err instanceof Error ? err.message : 'Ошибка входа.');
     } finally {
       setLoading(false);
     }
