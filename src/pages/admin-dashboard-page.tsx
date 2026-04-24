@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
-import { supabase } from '../services/supabase';
-import { withRetry } from '../utils/supabase-request';
+
 import { apiRequest, removeAccessToken } from '../services/api';
 type ExamResultRow = {
   attempt_id: string;

@@ -1,5 +1,4 @@
 import { useMemo, useRef, useState, type FormEvent } from 'react';
-import { supabase } from '../services/supabase';
 import { apiRequest } from '../services/api';
 type ExamQuestion = {
   question_id: number;

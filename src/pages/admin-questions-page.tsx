@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../services/supabase';
 import { apiRequest, removeAccessToken } from '../services/api';
 type QuestionRow = {
   id: number;
@@ -24,7 +23,6 @@ export default function AdminQuestionsPage() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [questions, setQuestions] = useState<QuestionRow[]>([]);
 useEffect(() => {
   const loadQuestions = async () => {
@@ -76,7 +74,6 @@ for (let i = 0; i < questions.length; i += chunkSize) {
         </button>
       </div>
 
-      {error ? <p className="mb-4 text-sm text-red-600">{error}</p> : null}
 
       {questions.length === 0 ? (
         <p>Вопросы не найдены.</p>
