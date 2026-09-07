@@ -13,11 +13,13 @@ import ExamPage from './pages/exam-page';
 import AdminLoginPage from './pages/admin-login-page';
 import AdminDashboardPage from './pages/admin-dashboard-page';
 import AdminQuestionsPage from './pages/admin-questions-page';
+import { LanguageProvider } from './components/site/language-provider';
 const SITE_URL = 'https://expert-mek.com';
 
 export default function App() {
   return (
     <BrowserRouter>
+      <LanguageProvider>
       <Routes>
         <Route
           path="/"
@@ -90,6 +92,7 @@ export default function App() {
         <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         <Route path="/admin/questions" element={<AdminQuestionsPage />} />
       </Routes>
+      </LanguageProvider>
     </BrowserRouter>
   );
 }

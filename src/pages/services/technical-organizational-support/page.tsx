@@ -1,5 +1,5 @@
 import { ContentPageLayout } from '../../../components/site/content-page-layout';
-import { companyRu, servicesRu, technicalOrganizationalPageRu, technicalOrganizationalPageRuBreadcrumb } from '../../../data/ru';
+import { useSiteData } from '../../../data';
 
 export default function TechnicalOrganizationPage({
     canonical,
@@ -8,15 +8,17 @@ export default function TechnicalOrganizationPage({
     canonical: string;
 
 }) {
+    const { company, services, technicalOrganizationalPage, technicalOrganizationalPageBreadcrumb } = useSiteData();
+
     return (
         <ContentPageLayout
-            company={companyRu}
-            services={servicesRu}
-            page={technicalOrganizationalPageRu}
-            breadcrumb={technicalOrganizationalPageRuBreadcrumb}
+            company={company}
+            services={services}
+            page={technicalOrganizationalPage}
+            breadcrumb={technicalOrganizationalPageBreadcrumb}
             canonical={canonical}
             robots="index,follow"
-            description={technicalOrganizationalPageRu.subtitle ?? technicalOrganizationalPageRu.title}
+            description={technicalOrganizationalPage.subtitle ?? technicalOrganizationalPage.title}
         />
     );
 }

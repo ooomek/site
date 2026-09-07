@@ -1,5 +1,5 @@
 import { ContentPageLayout } from '../../../components/site/content-page-layout';
-import { companyRu, servicesRu, customerInputControlPageRu, customerInputControlPageRuBreadcrumb } from '../../../data/ru';
+import { useSiteData } from '../../../data';
 
 export default function AgreementActionPage({
     canonical,
@@ -7,15 +7,17 @@ export default function AgreementActionPage({
 }: {
     canonical: string;
 }) {
+    const { company, services, customerInputControlPage, customerInputControlPageBreadcrumb } = useSiteData();
+
     return (
         <ContentPageLayout
-            company={companyRu}
-            services={servicesRu}
-            page={customerInputControlPageRu}
-            breadcrumb={customerInputControlPageRuBreadcrumb}
+            company={company}
+            services={services}
+            page={customerInputControlPage}
+            breadcrumb={customerInputControlPageBreadcrumb}
             canonical={canonical}
             robots="index,follow"
-            description={customerInputControlPageRu.subtitle ?? customerInputControlPageRu.title}
+            description={customerInputControlPage.subtitle ?? customerInputControlPage.title}
         />
     );
 }

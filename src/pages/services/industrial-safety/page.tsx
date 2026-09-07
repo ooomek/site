@@ -1,5 +1,5 @@
 import { ContentPageLayout } from '../../../components/site/content-page-layout';
-import { companyRu, servicesRu, industrialSafetyPageRu, industrialSafetyPageRuBreadcrumb } from '../../../data/ru';
+import { useSiteData } from '../../../data';
 
 export default function IndustrialSafetyPage({
     canonical,
@@ -8,15 +8,17 @@ export default function IndustrialSafetyPage({
     canonical: string;
 
 }) {
+    const { company, services, industrialSafetyPage, industrialSafetyPageBreadcrumb } = useSiteData();
+
     return (
         <ContentPageLayout
-            company={companyRu}
-            services={servicesRu}
-            page={industrialSafetyPageRu}
-            breadcrumb={industrialSafetyPageRuBreadcrumb}
+            company={company}
+            services={services}
+            page={industrialSafetyPage}
+            breadcrumb={industrialSafetyPageBreadcrumb}
             canonical={canonical}
             robots="index,follow"
-            description={industrialSafetyPageRu.subtitle ?? industrialSafetyPageRu.title}
+            description={industrialSafetyPage.subtitle ?? industrialSafetyPage.title}
         />
     );
 }

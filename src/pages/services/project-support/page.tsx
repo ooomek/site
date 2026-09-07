@@ -1,5 +1,5 @@
 import { ContentPageLayout } from '../../../components/site/content-page-layout';
-import { companyRu, servicesRu, projectSupportPageRu, projectSupportPageRuBreadcrumb } from '../../../data/ru';
+import { useSiteData } from '../../../data';
 
 export default function ProjectSupportPage({
     canonical,
@@ -7,15 +7,17 @@ export default function ProjectSupportPage({
 }: {
     canonical: string;
 }) {
+    const { company, services, projectSupportPage, projectSupportPageBreadcrumb } = useSiteData();
+
     return (
         <ContentPageLayout
-            company={companyRu}
-            services={servicesRu}
-            page={projectSupportPageRu}
-            breadcrumb={projectSupportPageRuBreadcrumb}
+            company={company}
+            services={services}
+            page={projectSupportPage}
+            breadcrumb={projectSupportPageBreadcrumb}
             canonical={canonical}
             robots="index,follow"
-            description={projectSupportPageRu.subtitle ?? projectSupportPageRu.title}
+            description={projectSupportPage.subtitle ?? projectSupportPage.title}
         />
     );
 }

@@ -1,5 +1,5 @@
 import { ContentPageLayout } from '../components/site/content-page-layout';
-import { companyRu, servicesRu, contactsPageRu, contactsPageRuBreadcrumb } from '../data/ru';
+import { useSiteData } from '../data';
 
 export default function ContactPage({
     canonical,
@@ -8,15 +8,17 @@ export default function ContactPage({
     canonical: string;
 
 }) {
+    const { company, services, contactsPage, contactsPageBreadcrumb } = useSiteData();
+
     return (
         <ContentPageLayout
-            company={companyRu}
-            services={servicesRu}
-            page={contactsPageRu}
-            breadcrumb={contactsPageRuBreadcrumb}
+            company={company}
+            services={services}
+            page={contactsPage}
+            breadcrumb={contactsPageBreadcrumb}
             canonical={canonical}
             robots="index,follow"
-            description={contactsPageRu.subtitle ?? contactsPageRu.title}
+            description={contactsPage.subtitle ?? contactsPage.title}
         />
     );
 }

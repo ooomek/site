@@ -1,4 +1,5 @@
 import { ContentPageLayout, type ContentPageData, type ContentPageBreadcrumb, type ServiceSideItem } from '../components/site/content-page-layout';
+import { useLanguage } from '../lib/language';
 import type { CompanyData } from '../components/site/types';
 
 type ServiceView = {
@@ -21,6 +22,8 @@ export default function ServicePage({
     service: ServiceView;
     services: ServiceSideItem[];
 }) {
+    const { t } = useLanguage();
+
     const page: ContentPageData = {
         title: service.title,
         subtitle: service.subtitle,
@@ -29,7 +32,7 @@ export default function ServicePage({
     };
 
     const breadcrumb: ContentPageBreadcrumb = {
-        middle_label: 'Услуги',
+        middle_label: t('Услуги', 'Services'),
         middle_href: '/services',
         current_label: service.title,
     };
@@ -42,7 +45,7 @@ export default function ServicePage({
             breadcrumb={breadcrumb}
             canonical={canonical}
             robots="index,follow"
-            description={service.subtitle ?? `Услуга: ${service.title}`}
+            description={service.subtitle ?? `${t('Услуга', 'Service')}: ${service.title}`}
             initialSidebarServiceId={service.id}
         />
     );

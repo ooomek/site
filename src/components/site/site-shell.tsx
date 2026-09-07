@@ -24,6 +24,7 @@ export function SiteShell({ company, services, children }: Props) {
         <div className="bg-[#f5f7fa] text-[#102946]">
             <SiteHeader
                 sticky
+                hidden={!stickyVisible}
                 email={email}
                 services={services}
                 presentationUrl={company.presentation_url}

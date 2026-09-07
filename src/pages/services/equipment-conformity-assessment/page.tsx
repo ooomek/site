@@ -1,5 +1,5 @@
 import { ContentPageLayout} from '../../../components/site/content-page-layout';
-import { companyRu, servicesRu, equipmentConformityPageRu, equipmentConformityPageRuBreadcrumb } from '../../../data/ru';
+import { useSiteData } from '../../../data';
 
 export default function EquipmentConformityPage({
     canonical,
@@ -7,15 +7,17 @@ export default function EquipmentConformityPage({
 }: {
     canonical: string;
 }) {
+    const { company, services, equipmentConformityPage, equipmentConformityPageBreadcrumb } = useSiteData();
+
     return (
         <ContentPageLayout
-            company={companyRu}
-            services={servicesRu}
-            page={equipmentConformityPageRu}
-            breadcrumb={equipmentConformityPageRuBreadcrumb}
+            company={company}
+            services={services}
+            page={equipmentConformityPage}
+            breadcrumb={equipmentConformityPageBreadcrumb}
             canonical={canonical}
             robots="index,follow"
-            description={equipmentConformityPageRu.subtitle ?? equipmentConformityPageRu.title}
+            description={equipmentConformityPage.subtitle ?? equipmentConformityPage.title}
         />
     );
 }
