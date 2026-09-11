@@ -15,7 +15,7 @@ type Props = {
 export function SiteHeader({ email, services, presentationUrl = null, sticky = false, className = '', hidden = false }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { language, setLanguage, t, localizePath } = useLanguage();
-  const navClass = 'inline-flex min-h-11 items-center text-sm font-semibold transition-colors hover:text-brand-orange focus-visible:outline-2 focus-visible:outline-brand-orange';
+  const navClass = 'inline-flex min-h-11 items-center whitespace-nowrap text-sm font-semibold transition-colors hover:text-brand-orange focus-visible:outline-2 focus-visible:outline-brand-orange';
 
   return (
     <header inert={hidden || undefined} aria-hidden={hidden || undefined} className={`z-50 border-b border-white/10 bg-brand-navy text-white ${sticky ? 'fixed inset-x-0 top-0 shadow-md' : 'relative'} ${className}`}>
@@ -23,7 +23,7 @@ export function SiteHeader({ email, services, presentationUrl = null, sticky = f
         <a href={localizePath('/')} aria-label={t('МЭК — Главная', 'MEK — Home')} className="shrink-0">
           <img src="/images/mek.png" alt={t('МЭК', 'MEK')} width="1240" height="961" className="h-14 w-[74px] object-contain" />
         </a>
-        <nav aria-label={t('Основная навигация', 'Main navigation')} className="ml-6 hidden items-center gap-7 lg:flex">
+        <nav aria-label={t('Основная навигация', 'Main navigation')} className="ml-3 hidden items-center gap-5 lg:flex xl:ml-6 xl:gap-7">
           <a href={localizePath('/about')} className={navClass}>{t('О компании', 'About us')}</a>
           <div className="group relative">
             <a href={localizePath('/services')} className={`${navClass} gap-1`}>
@@ -35,6 +35,7 @@ export function SiteHeader({ email, services, presentationUrl = null, sticky = f
               ))}
             </div>
           </div>
+          <a href={localizePath('/news')} className={navClass}>{t('Новости и статьи', 'News & articles')}</a>
           <a href={localizePath('/contacts')} className={navClass}>{t('Контакты', 'Contacts')}</a>
         </nav>
         <div className="ml-auto flex items-center gap-3 lg:gap-5">
@@ -55,6 +56,7 @@ export function SiteHeader({ email, services, presentationUrl = null, sticky = f
       {mobileOpen && <nav id={sticky ? 'sticky-mobile-menu' : 'mobile-menu'} aria-label={t('Мобильная навигация', 'Mobile navigation')} className="border-t border-white/10 px-5 pb-4 lg:hidden">
         <a href={localizePath('/about')} className="block py-3 text-sm hover:text-brand-orange">{t('О компании', 'About us')}</a>
         <a href={localizePath('/services')} className="block py-3 text-sm hover:text-brand-orange">{t('Услуги', 'Services')}</a>
+        <a href={localizePath('/news')} className="block py-3 text-sm hover:text-brand-orange">{t('Новости и статьи', 'News & articles')}</a>
         <a href={localizePath('/contacts')} className="block py-3 text-sm hover:text-brand-orange">{t('Контакты', 'Contacts')}</a>
         {presentationUrl && <a href={presentationUrl} target="_blank" rel="noreferrer" className="block py-3 text-sm hover:text-brand-orange">{t('Презентация', 'Presentation')}</a>}
         <a href={`mailto:${email}`} className="block py-3 text-sm text-brand-orange">{email}</a>

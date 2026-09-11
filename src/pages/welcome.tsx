@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { SiteFooter } from "../components/site/site-footer";
 import { SiteHeader } from "../components/site/site-header";
 import { SiteShell } from "../components/site/site-shell";
+import { ExternalArticles } from "../components/site/external-articles";
 
 import { Button } from "../components/ui/button";
 import { useSiteData } from "../data";
@@ -357,6 +358,8 @@ export default function Welcome({ canonical }: { canonical: string }) {
             </div>
           </div>
         </section>
+
+        <ExternalArticles preview />
 
  <section className="bg-[#101e3d] py-10">
   <div className="mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-8">

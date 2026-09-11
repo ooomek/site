@@ -63,6 +63,11 @@ export function SiteFooter({ company, services }: Props) {
                             </a>
                         </li>
                         <li>
+                            <a href={localizePath('/news')} className="hover:text-white">
+                                {t("Новости и статьи", "News & articles")}
+                            </a>
+                        </li>
+                        <li>
                             <a href={localizePath('/contacts')} className="hover:text-white">
 
                                 {t("Контакты", "Contacts")}

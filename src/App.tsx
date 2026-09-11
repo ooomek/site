@@ -3,6 +3,7 @@ import Welcome from './pages/welcome';
 import InfoPage from './pages/info-page';
 import ServicesPage from './pages/services-page';
 import ContactPage from './pages/contact-page';
+import NewsPage from './pages/news-page';
 import AgreementActionPage from './pages/services/customer-input-control/page';
 import EquipmentConformityPage from './pages/services/equipment-conformity-assessment/page';
 import IndustrialSafetyPage from './pages/services/industrial-safety/page';
@@ -33,6 +34,7 @@ export default function App() {
           path="/contacts"
           element={<ContactPage canonical={`${SITE_URL}/contacts`} />}
         />
+        <Route path="/news" element={<NewsPage canonical={`${SITE_URL}/news`} />} />
 
         <Route
           path="/services"
