@@ -4,6 +4,7 @@ import InfoPage from './pages/info-page';
 import ServicesPage from './pages/services-page';
 import ContactPage from './pages/contact-page';
 import NewsPage from './pages/news-page';
+import BlogArticlePage from './pages/blog-article-page';
 import AgreementActionPage from './pages/services/customer-input-control/page';
 import EquipmentConformityPage from './pages/services/equipment-conformity-assessment/page';
 import IndustrialSafetyPage from './pages/services/industrial-safety/page';
@@ -14,6 +15,7 @@ import ExamPage from './pages/exam-page';
 import AdminLoginPage from './pages/admin-login-page';
 import AdminDashboardPage from './pages/admin-dashboard-page';
 import AdminQuestionsPage from './pages/admin-questions-page';
+import AdminBlogPage from './pages/admin-blog-page';
 import { LanguageProvider } from './components/site/language-provider';
 const SITE_URL = 'https://expert-mek.com';
 
@@ -35,6 +37,7 @@ export default function App() {
           element={<ContactPage canonical={`${SITE_URL}/contacts`} />}
         />
         <Route path="/news" element={<NewsPage canonical={`${SITE_URL}/news`} />} />
+        <Route path="/news/:slug" element={<BlogArticlePage siteUrl={SITE_URL} />} />
 
         <Route
           path="/services"
@@ -93,6 +96,7 @@ export default function App() {
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         <Route path="/admin/questions" element={<AdminQuestionsPage />} />
+        <Route path="/admin/blog" element={<AdminBlogPage />} />
       </Routes>
       </LanguageProvider>
     </BrowserRouter>

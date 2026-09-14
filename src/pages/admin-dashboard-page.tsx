@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
+import { CheckCircle2, Clock3, Download, Eye, FileQuestion, Users } from 'lucide-react';
 
 import { apiRequest, removeAccessToken } from '../services/api';
+import { AdminLayout, AdminLoadingState } from '../components/admin/admin-layout';
 type ExamResultRow = {
   attempt_id: string;
   full_name: string;
@@ -40,43 +42,6 @@ type ExamDetails = {
   answers: ExamDetailsAnswer[];
 };
 
-// src/utils/supabase-request.ts
-
-export function wait(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export async function withSupabaseRetry<T>(
-  fn: (signal: AbortSignal) => PromiseLike<T>,
-  retries = 2,
-  timeoutMs = 10000
-): Promise<T> {
-  let lastError: unknown;
-
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    const controller = new AbortController();
-
-    const timeoutId = window.setTimeout(() => {
-      controller.abort();
-    }, timeoutMs);
-
-    try {
-      const result = await Promise.resolve(fn(controller.signal));
-      window.clearTimeout(timeoutId);
-      return result;
-    } catch (error) {
-      window.clearTimeout(timeoutId);
-      lastError = error;
-
-      if (attempt < retries) {
-        await wait(1000);
-      }
-    }
-  }
-
-  throw lastError;
-}
-
 async function loadFontAsBase64(url: string): Promise<string> {
   const response = await fetch(url);
 
@@ -100,11 +65,11 @@ async function loadFontAsBase64(url: string): Promise<string> {
 function formatStatus(status: string) {
   switch (status) {
     case 'submitted':
-      return 'Отправлено';
+      return 'Submitted';
     case 'in_progress':
-      return 'В процессе';
+      return 'In progress';
     case 'completed':
-      return 'Завершено';
+      return 'Completed';
     default:
       return status;
   }
@@ -137,7 +102,9 @@ function formatDate(value: string | null) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
 
-  return date.toLocaleString();
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  }).format(date);
 }
 
 // function getChoiceText(answer: ExamDetailsAnswer, choice: string | null) {
@@ -152,18 +119,23 @@ export default function AdminDashboardPage() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
-  const [signOutLoading, setSignOutLoading] = useState(false);
   const [error, setError] = useState('');
   const [rows, setRows] = useState<ExamResultRow[]>([]);
   const [selectedDetails, setSelectedDetails] = useState<ExamDetails | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [pdfLoadingId, setPdfLoadingId] = useState<string | null>(null);
 
-  useEffect(() => {
+useEffect(() => {
 const checkAndLoad = async () => {
   try {
     await apiRequest('/api/auth/user');
+  } catch {
+    removeAccessToken();
+    navigate('/admin/login', { replace: true });
+    return;
+  }
 
+  try {
     const response = await apiRequest<{ data: ExamResultRow[] } | ExamResultRow[]>(
   '/api/dashboard/results'
 );
@@ -173,8 +145,7 @@ const rowsData = Array.isArray(response) ? response : response.data;
 
     setRows(rowsData ?? []);
   } catch (err) {
-    removeAccessToken();
-    navigate('/admin/login', { replace: true });
+    setError(err instanceof Error ? err.message : 'Could not load exam results.');
   } finally {
     setLoading(false);
   }
@@ -495,168 +466,139 @@ const correctText = `Правильный ответ: ${formatChoiceLetter(answe
   }
 };
 
-const handleLogout = async () => {
-  setSignOutLoading(true);
-
-  try {
-    await apiRequest('/api/auth/logout', {
-      method: 'POST',
-    });
-  } catch {
-    // ignore
-  } finally {
-    removeAccessToken();
-    setSignOutLoading(false);
-    navigate('/admin/login', { replace: true });
-  }
-};
   if (loading) {
-    return (
-      <div className="mx-auto max-w-6xl px-4 py-10">
-        <p>Загрузка панели управления...</p>
-      </div>
-    );
+    return <AdminLoadingState label="Loading exam results…" />;
   }
 
-return (
-  <div className="mx-auto max-w-6xl px-4 py-10">
-    <div className="mb-6 flex items-center justify-between gap-4">
-      <h1 className="text-3xl font-bold">Панель управления администратора</h1>
-  <button
-      onClick={() => navigate('/admin/questions')}
-      className="rounded border px-4 py-2"
+  const completedRows = rows.filter(row => row.status === 'submitted' || row.status === 'completed');
+  const averageScore = completedRows.length
+    ? Math.round(completedRows.reduce((sum, row) => sum + ((row.score ?? 0) / Math.max(row.total_questions, 1)) * 100, 0) / completedRows.length)
+    : 0;
+
+  return (
+    <AdminLayout
+      title="Exam results"
+      description="Review every attempt, inspect individual answers, and export a complete PDF report."
+      actions={(
+        <button type="button" onClick={() => navigate('/admin/questions')} className="inline-flex min-h-11 items-center gap-2 border border-[#cfd6e2] bg-white px-5 text-sm font-semibold text-brand-navy hover:border-brand-orange hover:text-brand-orange">
+          <FileQuestion className="size-5" /> Question bank
+        </button>
+      )}
     >
-      Вопросы
-    </button>
-      <button
-        onClick={handleLogout}
-        disabled={signOutLoading}
-        className="rounded border px-4 py-2"
-      >
-        {signOutLoading ? 'Выход...' : 'Выйти'}
-      </button>
-    </div>
+      {error && <div className="mb-6 border-l-4 border-red-500 bg-red-50 px-5 py-4 text-sm text-red-800" role="alert">{error}</div>}
 
-    {error ? <p className="mb-4 text-sm text-red-600">{error}</p> : null}
-
-    <div className="overflow-x-auto rounded border">
-      <table className="min-w-full border-collapse">
-        <thead>
-          <tr className="border-b bg-gray-50 text-left">
-            <th className="px-4 py-3">ФИО</th>
-            <th className="px-4 py-3">Должность</th>
-            <th className="px-4 py-3">Начато</th>
-            <th className="px-4 py-3">Отправлено</th>
-            <th className="px-4 py-3">Результат</th>
-            <th className="px-4 py-3">Статус</th>
-            <th className="px-4 py-3">Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length === 0 ? (
-            <tr>
-              <td colSpan={7} className="px-4 py-6 text-center">
-                Результаты экзаменов не найдены.
-              </td>
-            </tr>
-          ) : (
-            rows.map((row) => (
-              <tr key={row.attempt_id} className="border-b">
-                <td className="px-4 py-3">{row.full_name}</td>
-                <td className="px-4 py-3">{row.work_position}</td>
-                <td className="px-4 py-3">{formatDate(row.started_at)}</td>
-                <td className="px-4 py-3">{formatDate(row.submitted_at)}</td>
-                <td className="px-4 py-3">
-                  {row.score ?? '-'} / {row.total_questions}
-                </td>
-                <td className="px-4 py-3">{formatStatus(row.status)}</td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleViewDetails(row.attempt_id)}
-                      className="rounded border px-3 py-1"
-                    >
-                      Просмотр
-                    </button>
-
-                    <button
-                      onClick={() => handleDownloadPdf(row.attempt_id)}
-                      disabled={pdfLoadingId === row.attempt_id}
-                      className="rounded border px-3 py-1"
-                    >
-                      {pdfLoadingId === row.attempt_id ? 'Генерация...' : 'Скачать PDF'}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-
-    <div className="mt-8">
-      <h2 className="mb-4 text-2xl font-semibold">Детали экзамена</h2>
-
-      {detailsLoading ? <p>Загрузка...</p> : null}
-
-      {!detailsLoading && !selectedDetails ? (
-        <p>Выберите результат, чтобы посмотреть ответы.</p>
-      ) : null}
-
-      {!detailsLoading && selectedDetails ? (
-        <div className="space-y-6">
-          <div className="rounded border p-5">
-            <p className="mb-2">
-              <strong>ФИО:</strong> {selectedDetails.attempt.full_name}
-            </p>
-            <p className="mb-2">
-              <strong>Должность:</strong> {selectedDetails.attempt.work_position}
-            </p>
-            <p className="mb-2">
-              <strong>Начато:</strong> {formatDate(selectedDetails.attempt.started_at)}
-            </p>
-            <p className="mb-2">
-              <strong>Отправлено:</strong> {formatDate(selectedDetails.attempt.submitted_at)}
-            </p>
-            <p className="mb-2">
-              <strong>Результат:</strong> {selectedDetails.attempt.score} /{' '}
-              {selectedDetails.attempt.total_questions}
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            {selectedDetails.answers?.map((answer) => (
-              <div key={answer.question_id} className="rounded border p-5">
-                <p className="mb-3 font-semibold">
-                  {answer.question_order}. {answer.question_text}
-                </p>
-
-                <div className="space-y-1 text-sm">
-                <p><strong>А:</strong> {answer.choice_a}</p>
-                <p><strong>Б:</strong> {answer.choice_b}</p>
-                <p><strong>В:</strong> {answer.choice_c}</p>
+      <div className="grid gap-4 sm:grid-cols-3">
+        {[
+          { label: 'Total attempts', value: rows.length, icon: Users },
+          { label: 'Completed', value: completedRows.length, icon: CheckCircle2 },
+          { label: 'Average score', value: `${averageScore}%`, icon: Clock3 },
+        ].map(({ label, value, icon: Icon }) => (
+          <div key={label} className="border border-[#dfe4ec] bg-white p-5 shadow-[0_8px_30px_rgba(16,30,61,0.04)]">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-medium text-[#667085]">{label}</p>
+                <p className="mt-2 text-3xl font-extrabold text-brand-navy">{value}</p>
               </div>
-
-<div className="mt-3 text-sm">
-  <p>
-<strong>Выбрано:</strong> {formatChoiceLetter(answer.selected_choice)}
-  </p>
-  <p>
-<strong>Правильный ответ:</strong> {formatChoiceLetter(answer.correct_choice)}  </p>
-  <p>
-    <strong>Результат:</strong>{' '}
-    <span className={answer.is_correct ? 'text-green-600' : 'text-red-600'}>
-      {answer.is_correct ? 'Правильно' : 'Неправильно'}
-    </span>
-  </p>
-</div>
-              </div>
-            ))}
+              <div className="flex size-11 items-center justify-center bg-[#fff3e8] text-brand-orange"><Icon className="size-5" /></div>
+            </div>
           </div>
+        ))}
+      </div>
+
+      <section className="mt-7 overflow-hidden border border-[#dfe4ec] bg-white shadow-[0_12px_40px_rgba(16,30,61,0.05)]" aria-labelledby="results-title">
+        <div className="border-b border-[#e5e9f0] p-5 sm:p-6">
+          <h2 id="results-title" className="text-xl font-bold text-brand-navy">Recent attempts</h2>
+          <p className="mt-1 text-sm text-[#667085]">All submitted and active exam sessions.</p>
         </div>
-      ) : null}
-    </div>
-  </div>
-);
+        <div className="overflow-x-auto">
+          <table className="min-w-[1050px] w-full border-collapse text-left">
+            <thead className="bg-[#f8f9fb] text-[11px] font-bold tracking-[0.08em] text-[#667085] uppercase">
+              <tr>
+                <th className="px-6 py-4">Candidate</th>
+                <th className="px-5 py-4">Position</th>
+                <th className="px-5 py-4">Started</th>
+                <th className="px-5 py-4">Submitted</th>
+                <th className="px-5 py-4">Score</th>
+                <th className="px-5 py-4">Status</th>
+                <th className="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#e8ebf0]">
+              {rows.length === 0 ? (
+                <tr><td colSpan={7} className="px-6 py-16 text-center text-sm text-[#667085]">No exam results found.</td></tr>
+              ) : rows.map(row => {
+                const scorePercent = row.score === null ? null : Math.round((row.score / Math.max(row.total_questions, 1)) * 100);
+                return (
+                  <tr key={row.attempt_id} className="transition hover:bg-[#fafbfc]">
+                    <td className="px-6 py-5"><span className="block max-w-52 font-semibold text-brand-navy">{row.full_name}</span></td>
+                    <td className="px-5 py-5 text-sm text-[#526077]">{row.work_position}</td>
+                    <td className="px-5 py-5 text-sm whitespace-nowrap text-[#526077]">{formatDate(row.started_at)}</td>
+                    <td className="px-5 py-5 text-sm whitespace-nowrap text-[#526077]">{formatDate(row.submitted_at)}</td>
+                    <td className="px-5 py-5">
+                      <div className="flex items-center gap-3">
+                        <span className="min-w-12 text-sm font-bold text-brand-navy">{row.score ?? '-'} / {row.total_questions}</span>
+                        {scorePercent !== null && <span className="h-1.5 w-14 overflow-hidden bg-[#e8ebf0]"><span className="block h-full bg-brand-orange" style={{ width: `${scorePercent}%` }} /></span>}
+                      </div>
+                    </td>
+                    <td className="px-5 py-5"><span className={`inline-flex px-2.5 py-1 text-[11px] font-bold tracking-wide uppercase ${row.status === 'in_progress' ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'}`}>{formatStatus(row.status)}</span></td>
+                    <td className="px-6 py-5">
+                      <div className="flex justify-end gap-2">
+                        <button type="button" onClick={() => handleViewDetails(row.attempt_id)} className="inline-flex min-h-9 items-center gap-2 border border-[#d7dde8] px-3 text-xs font-semibold text-brand-navy hover:border-brand-orange hover:text-brand-orange"><Eye className="size-4" /> View</button>
+                        <button type="button" onClick={() => handleDownloadPdf(row.attempt_id)} disabled={pdfLoadingId === row.attempt_id} className="inline-flex min-h-9 items-center gap-2 bg-brand-navy px-3 text-xs font-semibold text-white hover:bg-[#1b315f] disabled:opacity-50"><Download className="size-4" /> {pdfLoadingId === row.attempt_id ? 'Generating…' : 'PDF'}</button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="mt-7 border border-[#dfe4ec] bg-white shadow-[0_12px_40px_rgba(16,30,61,0.05)]" aria-labelledby="details-title">
+        <div className="border-b border-[#e5e9f0] p-5 sm:p-6">
+          <h2 id="details-title" className="text-xl font-bold text-brand-navy">Exam details</h2>
+          <p className="mt-1 text-sm text-[#667085]">Select an attempt above to inspect every answer.</p>
+        </div>
+
+        {detailsLoading && <div className="flex min-h-48 items-center justify-center gap-3 text-sm font-semibold text-brand-navy"><span className="size-5 animate-spin rounded-full border-2 border-brand-orange border-t-transparent" /> Loading answers…</div>}
+        {!detailsLoading && !selectedDetails && <div className="flex min-h-48 items-center justify-center px-6 text-center text-sm text-[#667085]">No exam is selected.</div>}
+
+        {!detailsLoading && selectedDetails && (
+          <div className="p-5 sm:p-6">
+            <div className="grid gap-4 bg-[#f8f9fb] p-5 sm:grid-cols-2 lg:grid-cols-5">
+              {[
+                ['Candidate', selectedDetails.attempt.full_name],
+                ['Position', selectedDetails.attempt.work_position],
+                ['Started', formatDate(selectedDetails.attempt.started_at)],
+                ['Submitted', formatDate(selectedDetails.attempt.submitted_at)],
+                ['Score', `${selectedDetails.attempt.score ?? '-'} / ${selectedDetails.attempt.total_questions}`],
+              ].map(([label, value]) => <div key={label}><p className="text-[11px] font-bold tracking-wide text-[#98a2b3] uppercase">{label}</p><p className="mt-2 text-sm font-semibold text-brand-navy">{value}</p></div>)}
+            </div>
+
+            <div className="mt-6 space-y-4">
+              {selectedDetails.answers?.map(answer => (
+                <article key={answer.question_id} className="border border-[#dfe4ec] p-5">
+                  <div className="flex items-start gap-3">
+                    <span className="flex size-8 shrink-0 items-center justify-center bg-brand-navy text-xs font-bold text-white">{answer.question_order}</span>
+                    <p className="pt-1 font-semibold leading-6 text-brand-navy">{answer.question_text}</p>
+                  </div>
+                  <div className="mt-4 grid gap-2 text-sm text-[#526077] sm:grid-cols-3">
+                    <p><strong className="text-brand-navy">А:</strong> {answer.choice_a}</p>
+                    <p><strong className="text-brand-navy">Б:</strong> {answer.choice_b}</p>
+                    <p><strong className="text-brand-navy">В:</strong> {answer.choice_c}</p>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-[#e8ebf0] pt-4 text-sm">
+                    <p><strong>Selected:</strong> {formatChoiceLetter(answer.selected_choice)}</p>
+                    <p><strong>Correct:</strong> {formatChoiceLetter(answer.correct_choice)}</p>
+                    <p className={`font-bold ${answer.is_correct ? 'text-emerald-700' : 'text-red-600'}`}>{answer.is_correct ? 'Correct' : 'Incorrect'}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+    </AdminLayout>
+  );
 }

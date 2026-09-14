@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { ExternalArticles } from '../components/site/external-articles';
+import { CompanyBlog } from '../components/site/company-blog';
 import { SiteFooter } from '../components/site/site-footer';
 import { SiteHeader } from '../components/site/site-header';
 import { SiteShell } from '../components/site/site-shell';
@@ -47,6 +48,7 @@ export default function NewsPage({ canonical }: { canonical: string }) {
             <h1 className="text-3xl font-extrabold uppercase sm:text-4xl">{title}</h1>
           </div>
         </div>
+        <CompanyBlog />
         <ExternalArticles />
       </main>
       <SiteFooter company={company} services={services} />

@@ -4,6 +4,7 @@ import { SiteFooter } from "../components/site/site-footer";
 import { SiteHeader } from "../components/site/site-header";
 import { SiteShell } from "../components/site/site-shell";
 import { ExternalArticles } from "../components/site/external-articles";
+import { CompanyBlog } from "../components/site/company-blog";
 
 import { Button } from "../components/ui/button";
 import { useSiteData } from "../data";
@@ -359,6 +360,7 @@ export default function Welcome({ canonical }: { canonical: string }) {
           </div>
         </section>
 
+        <CompanyBlog preview />
         <ExternalArticles preview />
 
  <section className="bg-[#101e3d] py-10">
