@@ -1,4 +1,5 @@
 import { ArrowLeft, CalendarDays } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { SiteFooter } from '../components/site/site-footer';
@@ -8,6 +9,29 @@ import { useSiteData } from '../data';
 import { useLanguage } from '../lib/language';
 import { getPublishedBlogPost } from '../services/blog-api';
 import type { BlogPost } from '../types/blog';
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function renderArticleHtml(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  if (/<\/?[a-z][\s\S]*>/i.test(trimmed)) {
+    return DOMPurify.sanitize(trimmed, { ADD_ATTR: ['target'] });
+  }
+  const paragraphs = trimmed
+    .split(/\n\s*\n/)
+    .filter(Boolean)
+    .map(paragraph => `<p>${escapeHtml(paragraph.trim()).replaceAll('\n', '<br>')}</p>`)
+    .join('');
+  return DOMPurify.sanitize(paragraphs);
+}
 
 export default function BlogArticlePage({ siteUrl }: { siteUrl: string }) {
   const { slug = '' } = useParams();
@@ -31,6 +55,7 @@ export default function BlogArticlePage({ siteUrl }: { siteUrl: string }) {
   const title = post ? (language === 'en' ? post.title_en?.trim() || post.title_ru : post.title_ru) : t('Статья', 'Article');
   const excerpt = post ? (language === 'en' ? post.excerpt_en?.trim() || post.excerpt_ru : post.excerpt_ru) : '';
   const content = post ? (language === 'en' ? post.content_en?.trim() || post.content_ru : post.content_ru) : '';
+  const contentHtml = renderArticleHtml(content);
 
   useEffect(() => {
     document.title = `${title} | ${language === 'ru' ? 'МЭК' : 'MEK'}`;
@@ -96,11 +121,10 @@ export default function BlogArticlePage({ siteUrl }: { siteUrl: string }) {
               <img src={post.cover_image_url} alt="" className="mt-9 aspect-[16/9] w-full object-cover" />
             )}
 
-            <div className="mt-10 space-y-6 text-base leading-8 text-[#26354f] sm:text-lg">
-              {content.split(/\n\s*\n/).filter(Boolean).map((paragraph, index) => (
-                <p key={index} className="whitespace-pre-line">{paragraph.trim()}</p>
-              ))}
-            </div>
+            <div
+              className="blog-rich-content mt-10 text-base leading-8 text-[#26354f] sm:text-lg"
+              dangerouslySetInnerHTML={{ __html: contentHtml }}
+            />
           </article>
         )}
       </main>

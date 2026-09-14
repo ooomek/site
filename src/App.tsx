@@ -16,6 +16,7 @@ import AdminLoginPage from './pages/admin-login-page';
 import AdminDashboardPage from './pages/admin-dashboard-page';
 import AdminQuestionsPage from './pages/admin-questions-page';
 import AdminBlogPage from './pages/admin-blog-page';
+import AdminBlogEditorPage from './pages/admin-blog-editor-page';
 import { LanguageProvider } from './components/site/language-provider';
 const SITE_URL = 'https://expert-mek.com';
 
@@ -97,6 +98,8 @@ export default function App() {
         <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         <Route path="/admin/questions" element={<AdminQuestionsPage />} />
         <Route path="/admin/blog" element={<AdminBlogPage />} />
+        <Route path="/admin/blog/new" element={<AdminBlogEditorPage />} />
+        <Route path="/admin/blog/:postId/edit" element={<AdminBlogEditorPage />} />
       </Routes>
       </LanguageProvider>
     </BrowserRouter>
