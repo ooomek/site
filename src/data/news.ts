@@ -6,7 +6,7 @@ export const newsPublishers = {
   atomicEnergy: {
     name: { ru: 'Атомная энергия 2.0', en: 'Atomic Energy 2.0' },
     url: 'https://www.atomic-energy.ru/',
-    logo: '/news/atomic-energy-logo.svg',
+    logo: '/media/news/atomic-energy-logo.svg',
   },
 };
 
@@ -28,7 +28,7 @@ export const externalArticles: ExternalArticle[] = [
     publisher: 'atomicEnergy',
     publishedAt: '2026-09-07',
     url: 'https://www.atomic-energy.ru/articles/2026/09/07/168339',
-    image: '/news/mek-it.jpg',
+    image: '/media/news/mek-it.jpg',
     title: {
       ru: 'МЭК IT: Интеграция цифровых решений в производственный процесс',
       en: 'MEK IT: Integrating digital solutions into production processes',
@@ -43,7 +43,7 @@ export const externalArticles: ExternalArticle[] = [
     publisher: 'atomicEnergy',
     publishedAt: '2026-08-21',
     url: 'https://www.atomic-energy.ru/articles/2026/08/21/167945',
-    image: '/news/technical-audit.jpg',
+    image: '/media/news/technical-audit.jpg',
     title: {
       ru: 'Технический аудит на опережение первично позволит исключить системные ошибки перед изготовлением',
       en: 'Proactive technical audits help prevent systemic errors before manufacturing',
