@@ -19,19 +19,25 @@ export async function apiRequest<T>(
   const token = getAccessToken();
   const isFormData = options.body instanceof FormData;
 
-  const response = await fetch(`${API_URL}${path}`, {
-    ...options,
-    headers: {
-      ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers ?? {}),
-    },
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      ...options,
+      headers: {
+        ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers ?? {}),
+      },
+    });
+  } catch {
+    throw new Error('Не удалось подключиться к серверу. Попробуйте ещё раз.');
+  }
 
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(data?.error || data?.message || 'Server error.');
+    throw new Error(data?.error || data?.message || 'Ошибка сервера.');
   }
 
   return data as T;

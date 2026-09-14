@@ -22,7 +22,7 @@ export default function AdminLoginPage() {
     setError('');
 
     if (!email.trim() || !password.trim()) {
-      setError('Enter your email and password.');
+      setError('Введите электронную почту и пароль.');
       return;
     }
 
@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
       setAccessToken(result.session.access_token);
       navigate('/admin/dashboard', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not sign in.');
+      setError(err instanceof Error ? err.message : 'Не удалось войти.');
     } finally {
       setLoading(false);
     }
@@ -54,18 +54,18 @@ export default function AdminLoginPage() {
         <img src="/images/BG.png" alt="" className="absolute inset-0 h-full w-full object-cover opacity-55" />
         <div className="absolute inset-0 bg-gradient-to-br from-brand-navy/95 via-brand-navy/60 to-brand-navy/20" />
         <div className="relative flex h-full flex-col justify-between p-12 xl:p-16">
-          <a href="/?lang=ru" className="w-fit" aria-label="Open MEK website">
+          <a href="/?lang=ru" className="w-fit" aria-label="Открыть сайт МЭК">
             <img src="/images/mek.png" alt="MEK" width="1240" height="961" className="h-20 w-28 object-contain" />
           </a>
           <div className="max-w-xl pb-8 text-white">
             <span className="inline-flex items-center gap-2 border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold tracking-[0.14em] uppercase backdrop-blur-sm">
-              <ShieldCheck className="size-4 text-brand-orange" /> Secure administration
+              <ShieldCheck className="size-4 text-brand-orange" /> Защищённое администрирование
             </span>
             <h1 className="mt-7 text-5xl font-extrabold leading-[1.08] tracking-[-0.04em] xl:text-6xl">
-              Manage exams and company stories in one place.
+              Управляйте экзаменами и новостями компании в одном месте.
             </h1>
             <p className="mt-6 max-w-lg text-base leading-7 text-white/75">
-              Review exam results, maintain the question bank, and publish bilingual company news.
+              Проверяйте результаты экзаменов, ведите банк вопросов и публикуйте новости компании на двух языках.
             </p>
           </div>
         </div>
@@ -73,16 +73,16 @@ export default function AdminLoginPage() {
 
       <section className="flex min-h-screen items-center justify-center px-5 py-12 sm:px-10">
         <div className="w-full max-w-md">
-          <a href="/?lang=ru" className="mb-12 inline-block lg:hidden" aria-label="Open MEK website">
+          <a href="/?lang=ru" className="mb-12 inline-block lg:hidden" aria-label="Открыть сайт МЭК">
             <img src="/images/mek.png" alt="MEK" width="1240" height="961" className="h-16 w-24 object-contain" />
           </a>
-          <p className="text-xs font-semibold tracking-[0.18em] text-brand-orange uppercase">MEK control center</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.04em] text-brand-navy">Welcome back</h2>
-          <p className="mt-3 text-sm leading-6 text-[#667085]">Sign in with your administrator account to continue.</p>
+          <p className="text-xs font-semibold tracking-[0.18em] text-brand-orange uppercase">Центр управления МЭК</p>
+          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.04em] text-brand-navy">Добро пожаловать</h2>
+          <p className="mt-3 text-sm leading-6 text-[#667085]">Войдите под учётной записью администратора.</p>
 
           <form onSubmit={handleLogin} className="mt-9 space-y-5" noValidate>
             <label className="block">
-              <span className="mb-2 block text-sm font-semibold text-brand-navy">Email address</span>
+              <span className="mb-2 block text-sm font-semibold text-brand-navy">Электронная почта</span>
               <span className="relative block">
                 <Mail className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-[#98a2b3]" />
                 <input
@@ -97,7 +97,7 @@ export default function AdminLoginPage() {
             </label>
 
             <label className="block">
-              <span className="mb-2 block text-sm font-semibold text-brand-navy">Password</span>
+              <span className="mb-2 block text-sm font-semibold text-brand-navy">Пароль</span>
               <span className="relative block">
                 <LockKeyhole className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-[#98a2b3]" />
                 <input
@@ -106,7 +106,7 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="h-13 w-full border border-[#cfd6e2] bg-white pr-4 pl-12 text-sm text-brand-navy outline-none transition placeholder:text-[#98a2b3] focus:border-brand-orange"
-                  placeholder="Enter your password"
+                  placeholder="Введите пароль"
                 />
               </span>
             </label>
@@ -118,7 +118,7 @@ export default function AdminLoginPage() {
               disabled={loading}
               className="flex min-h-13 w-full items-center justify-center gap-3 bg-brand-orange px-5 text-sm font-bold text-brand-navy transition hover:bg-[#ff922f] disabled:opacity-60"
             >
-              {loading ? 'Signing in…' : 'Sign in'}
+              {loading ? 'Вход…' : 'Войти'}
               {!loading && <ArrowRight className="size-5" aria-hidden="true" />}
             </button>
           </form>

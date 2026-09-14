@@ -65,11 +65,11 @@ async function loadFontAsBase64(url: string): Promise<string> {
 function formatStatus(status: string) {
   switch (status) {
     case 'submitted':
-      return 'Submitted';
+      return 'Отправлено';
     case 'in_progress':
-      return 'In progress';
+      return 'В процессе';
     case 'completed':
-      return 'Completed';
+      return 'Завершено';
     default:
       return status;
   }
@@ -102,7 +102,7 @@ function formatDate(value: string | null) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
 
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Intl.DateTimeFormat('ru-RU', {
     day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
   }).format(date);
 }
@@ -145,7 +145,7 @@ const rowsData = Array.isArray(response) ? response : response.data;
 
     setRows(rowsData ?? []);
   } catch (err) {
-    setError(err instanceof Error ? err.message : 'Could not load exam results.');
+    setError(err instanceof Error ? err.message : 'Не удалось загрузить результаты экзаменов.');
   } finally {
     setLoading(false);
   }
@@ -170,7 +170,7 @@ const fetchExamDetails = async (attemptId: string) => {
       setSelectedDetails(details);
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : 'Failed to load exam details.';
+        err instanceof Error ? err.message : 'Не удалось загрузить детали экзамена.';
       setError(message);
     } finally {
       setDetailsLoading(false);
@@ -459,7 +459,7 @@ const correctText = `Правильный ответ: ${formatChoiceLetter(answe
     doc.save(`exam_${safeName}_${details.attempt.attempt_id}.pdf`);
   } catch (err) {
     const message =
-      err instanceof Error ? err.message : 'Failed to generate PDF.';
+      err instanceof Error ? err.message : 'Не удалось сформировать PDF.';
     setError(message);
   } finally {
     setPdfLoadingId(null);
@@ -467,7 +467,7 @@ const correctText = `Правильный ответ: ${formatChoiceLetter(answe
 };
 
   if (loading) {
-    return <AdminLoadingState label="Loading exam results…" />;
+    return <AdminLoadingState label="Загрузка результатов экзаменов…" />;
   }
 
   const completedRows = rows.filter(row => row.status === 'submitted' || row.status === 'completed');
@@ -477,11 +477,11 @@ const correctText = `Правильный ответ: ${formatChoiceLetter(answe
 
   return (
     <AdminLayout
-      title="Exam results"
-      description="Review every attempt, inspect individual answers, and export a complete PDF report."
+      title="Результаты экзаменов"
+      description="Просматривайте все попытки, проверяйте ответы и выгружайте подробные отчёты в PDF."
       actions={(
         <button type="button" onClick={() => navigate('/admin/questions')} className="inline-flex min-h-11 items-center gap-2 border border-[#cfd6e2] bg-white px-5 text-sm font-semibold text-brand-navy hover:border-brand-orange hover:text-brand-orange">
-          <FileQuestion className="size-5" /> Question bank
+          <FileQuestion className="size-5" /> Банк вопросов
         </button>
       )}
     >
@@ -489,9 +489,9 @@ const correctText = `Правильный ответ: ${formatChoiceLetter(answe
 
       <div className="grid gap-4 sm:grid-cols-3">
         {[
-          { label: 'Total attempts', value: rows.length, icon: Users },
-          { label: 'Completed', value: completedRows.length, icon: CheckCircle2 },
-          { label: 'Average score', value: `${averageScore}%`, icon: Clock3 },
+          { label: 'Всего попыток', value: rows.length, icon: Users },
+          { label: 'Завершено', value: completedRows.length, icon: CheckCircle2 },
+          { label: 'Средний результат', value: `${averageScore}%`, icon: Clock3 },
         ].map(({ label, value, icon: Icon }) => (
           <div key={label} className="border border-[#dfe4ec] bg-white p-5 shadow-[0_8px_30px_rgba(16,30,61,0.04)]">
             <div className="flex items-center justify-between gap-4">
@@ -507,25 +507,25 @@ const correctText = `Правильный ответ: ${formatChoiceLetter(answe
 
       <section className="mt-7 overflow-hidden border border-[#dfe4ec] bg-white shadow-[0_12px_40px_rgba(16,30,61,0.05)]" aria-labelledby="results-title">
         <div className="border-b border-[#e5e9f0] p-5 sm:p-6">
-          <h2 id="results-title" className="text-xl font-bold text-brand-navy">Recent attempts</h2>
-          <p className="mt-1 text-sm text-[#667085]">All submitted and active exam sessions.</p>
+          <h2 id="results-title" className="text-xl font-bold text-brand-navy">Последние попытки</h2>
+          <p className="mt-1 text-sm text-[#667085]">Все завершённые и активные экзамены.</p>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-[1050px] w-full border-collapse text-left">
             <thead className="bg-[#f8f9fb] text-[11px] font-bold tracking-[0.08em] text-[#667085] uppercase">
               <tr>
-                <th className="px-6 py-4">Candidate</th>
-                <th className="px-5 py-4">Position</th>
-                <th className="px-5 py-4">Started</th>
-                <th className="px-5 py-4">Submitted</th>
-                <th className="px-5 py-4">Score</th>
-                <th className="px-5 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+                <th className="px-6 py-4">Участник</th>
+                <th className="px-5 py-4">Должность</th>
+                <th className="px-5 py-4">Начало</th>
+                <th className="px-5 py-4">Отправлено</th>
+                <th className="px-5 py-4">Результат</th>
+                <th className="px-5 py-4">Статус</th>
+                <th className="px-6 py-4 text-right">Действия</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#e8ebf0]">
               {rows.length === 0 ? (
-                <tr><td colSpan={7} className="px-6 py-16 text-center text-sm text-[#667085]">No exam results found.</td></tr>
+                <tr><td colSpan={7} className="px-6 py-16 text-center text-sm text-[#667085]">Результаты экзаменов не найдены.</td></tr>
               ) : rows.map(row => {
                 const scorePercent = row.score === null ? null : Math.round((row.score / Math.max(row.total_questions, 1)) * 100);
                 return (
@@ -543,8 +543,8 @@ const correctText = `Правильный ответ: ${formatChoiceLetter(answe
                     <td className="px-5 py-5"><span className={`inline-flex px-2.5 py-1 text-[11px] font-bold tracking-wide uppercase ${row.status === 'in_progress' ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'}`}>{formatStatus(row.status)}</span></td>
                     <td className="px-6 py-5">
                       <div className="flex justify-end gap-2">
-                        <button type="button" onClick={() => handleViewDetails(row.attempt_id)} className="inline-flex min-h-9 items-center gap-2 border border-[#d7dde8] px-3 text-xs font-semibold text-brand-navy hover:border-brand-orange hover:text-brand-orange"><Eye className="size-4" /> View</button>
-                        <button type="button" onClick={() => handleDownloadPdf(row.attempt_id)} disabled={pdfLoadingId === row.attempt_id} className="inline-flex min-h-9 items-center gap-2 bg-brand-navy px-3 text-xs font-semibold text-white hover:bg-[#1b315f] disabled:opacity-50"><Download className="size-4" /> {pdfLoadingId === row.attempt_id ? 'Generating…' : 'PDF'}</button>
+                        <button type="button" onClick={() => handleViewDetails(row.attempt_id)} className="inline-flex min-h-9 items-center gap-2 border border-[#d7dde8] px-3 text-xs font-semibold text-brand-navy hover:border-brand-orange hover:text-brand-orange"><Eye className="size-4" /> Открыть</button>
+                        <button type="button" onClick={() => handleDownloadPdf(row.attempt_id)} disabled={pdfLoadingId === row.attempt_id} className="inline-flex min-h-9 items-center gap-2 bg-brand-navy px-3 text-xs font-semibold text-white hover:bg-[#1b315f] disabled:opacity-50"><Download className="size-4" /> {pdfLoadingId === row.attempt_id ? 'Создание…' : 'PDF'}</button>
                       </div>
                     </td>
                   </tr>
@@ -557,22 +557,22 @@ const correctText = `Правильный ответ: ${formatChoiceLetter(answe
 
       <section className="mt-7 border border-[#dfe4ec] bg-white shadow-[0_12px_40px_rgba(16,30,61,0.05)]" aria-labelledby="details-title">
         <div className="border-b border-[#e5e9f0] p-5 sm:p-6">
-          <h2 id="details-title" className="text-xl font-bold text-brand-navy">Exam details</h2>
-          <p className="mt-1 text-sm text-[#667085]">Select an attempt above to inspect every answer.</p>
+          <h2 id="details-title" className="text-xl font-bold text-brand-navy">Детали экзамена</h2>
+          <p className="mt-1 text-sm text-[#667085]">Выберите попытку выше, чтобы просмотреть все ответы.</p>
         </div>
 
-        {detailsLoading && <div className="flex min-h-48 items-center justify-center gap-3 text-sm font-semibold text-brand-navy"><span className="size-5 animate-spin rounded-full border-2 border-brand-orange border-t-transparent" /> Loading answers…</div>}
-        {!detailsLoading && !selectedDetails && <div className="flex min-h-48 items-center justify-center px-6 text-center text-sm text-[#667085]">No exam is selected.</div>}
+        {detailsLoading && <div className="flex min-h-48 items-center justify-center gap-3 text-sm font-semibold text-brand-navy"><span className="size-5 animate-spin rounded-full border-2 border-brand-orange border-t-transparent" /> Загрузка ответов…</div>}
+        {!detailsLoading && !selectedDetails && <div className="flex min-h-48 items-center justify-center px-6 text-center text-sm text-[#667085]">Экзамен не выбран.</div>}
 
         {!detailsLoading && selectedDetails && (
           <div className="p-5 sm:p-6">
             <div className="grid gap-4 bg-[#f8f9fb] p-5 sm:grid-cols-2 lg:grid-cols-5">
               {[
-                ['Candidate', selectedDetails.attempt.full_name],
-                ['Position', selectedDetails.attempt.work_position],
-                ['Started', formatDate(selectedDetails.attempt.started_at)],
-                ['Submitted', formatDate(selectedDetails.attempt.submitted_at)],
-                ['Score', `${selectedDetails.attempt.score ?? '-'} / ${selectedDetails.attempt.total_questions}`],
+                ['Участник', selectedDetails.attempt.full_name],
+                ['Должность', selectedDetails.attempt.work_position],
+                ['Начало', formatDate(selectedDetails.attempt.started_at)],
+                ['Отправлено', formatDate(selectedDetails.attempt.submitted_at)],
+                ['Результат', `${selectedDetails.attempt.score ?? '-'} / ${selectedDetails.attempt.total_questions}`],
               ].map(([label, value]) => <div key={label}><p className="text-[11px] font-bold tracking-wide text-[#98a2b3] uppercase">{label}</p><p className="mt-2 text-sm font-semibold text-brand-navy">{value}</p></div>)}
             </div>
 
@@ -589,9 +589,9 @@ const correctText = `Правильный ответ: ${formatChoiceLetter(answe
                     <p><strong className="text-brand-navy">В:</strong> {answer.choice_c}</p>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-[#e8ebf0] pt-4 text-sm">
-                    <p><strong>Selected:</strong> {formatChoiceLetter(answer.selected_choice)}</p>
-                    <p><strong>Correct:</strong> {formatChoiceLetter(answer.correct_choice)}</p>
-                    <p className={`font-bold ${answer.is_correct ? 'text-emerald-700' : 'text-red-600'}`}>{answer.is_correct ? 'Correct' : 'Incorrect'}</p>
+                    <p><strong>Выбрано:</strong> {formatChoiceLetter(answer.selected_choice)}</p>
+                    <p><strong>Правильный ответ:</strong> {formatChoiceLetter(answer.correct_choice)}</p>
+                    <p className={`font-bold ${answer.is_correct ? 'text-emerald-700' : 'text-red-600'}`}>{answer.is_correct ? 'Правильно' : 'Неправильно'}</p>
                   </div>
                 </article>
               ))}
