@@ -73,6 +73,9 @@ export function SiteFooter({ company, services }: Props) {
                                 {t("Контакты", "Contacts")}
                             </a>
                         </li>
+                        <li>
+                            <a href="/ebook/chapter-1" className="hover:text-white">{t('Детская книга', 'Children’s book')}</a>
+                        </li>
                     </ul>
                 </section>
             </div>

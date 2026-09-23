@@ -36,6 +36,7 @@ export function SiteHeader({ email, services, presentationUrl = null, sticky = f
             </div>
           </div>
           <a href={localizePath('/news')} className={navClass}>{t('Новости и статьи', 'News & articles')}</a>
+          <a href="/ebook/chapter-1" className={navClass}>{t('Детская книга', 'Children’s book')}</a>
           <a href={localizePath('/contacts')} className={navClass}>{t('Контакты', 'Contacts')}</a>
         </nav>
         <div className="ml-auto flex items-center gap-3 lg:gap-5">
@@ -57,6 +58,7 @@ export function SiteHeader({ email, services, presentationUrl = null, sticky = f
         <a href={localizePath('/about')} className="block py-3 text-sm hover:text-brand-orange">{t('О компании', 'About us')}</a>
         <a href={localizePath('/services')} className="block py-3 text-sm hover:text-brand-orange">{t('Услуги', 'Services')}</a>
         <a href={localizePath('/news')} className="block py-3 text-sm hover:text-brand-orange">{t('Новости и статьи', 'News & articles')}</a>
+        <a href="/ebook/chapter-1" className="block py-3 text-sm hover:text-brand-orange">{t('Детская книга', 'Children’s book')}</a>
         <a href={localizePath('/contacts')} className="block py-3 text-sm hover:text-brand-orange">{t('Контакты', 'Contacts')}</a>
         {presentationUrl && <a href={presentationUrl} target="_blank" rel="noreferrer" className="block py-3 text-sm hover:text-brand-orange">{t('Презентация', 'Presentation')}</a>}
         <a href={`mailto:${email}`} className="block py-3 text-sm text-brand-orange">{email}</a>

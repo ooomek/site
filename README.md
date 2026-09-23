@@ -2,6 +2,8 @@
 
 For maintaining the external news section, see [Adding news articles](docs/news.md).
 
+For the hardcoded children's book, see [Ebook prototype](docs/ebook.md).
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

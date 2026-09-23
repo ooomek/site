@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import Welcome from './pages/welcome';
 import InfoPage from './pages/info-page';
 import ServicesPage from './pages/services-page';
@@ -18,6 +19,8 @@ import AdminQuestionsPage from './pages/admin-questions-page';
 import AdminBlogPage from './pages/admin-blog-page';
 import AdminBlogEditorPage from './pages/admin-blog-editor-page';
 import { LanguageProvider } from './components/site/language-provider';
+import { chapter1Data } from './data/chapter1Data';
+const EBookReader = lazy(() => import('./components/EBookReader/EBookReader'));
 const SITE_URL = 'https://expert-mek.com';
 
 export default function App() {
@@ -39,6 +42,7 @@ export default function App() {
         />
         <Route path="/news" element={<NewsPage canonical={`${SITE_URL}/news`} />} />
         <Route path="/news/:slug" element={<BlogArticlePage siteUrl={SITE_URL} />} />
+        <Route path="/ebook/chapter-1" element={<Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#faf8f3] text-brand-navy" role="status">Открываем книгу…</div>}><EBookReader chapter={chapter1Data} /></Suspense>} />
 
         <Route
           path="/services"
