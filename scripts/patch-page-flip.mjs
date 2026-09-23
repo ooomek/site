@@ -40,35 +40,50 @@ const replacements = [
     before: 'setTimeout(()=>{this.ui.update(),this.trigger("init",this,{page:this.setting.startPage,mode:this.render.getOrientation()})},1)',
     after: 'this.ebookInitTimer=setTimeout(()=>{if(!this.ebookDestroyed){this.ui.update();this.trigger("init",this,{page:this.setting.startPage,mode:this.render.getOrientation()})}},1)',
   },
+  {
+    name: 'safe boundary fold',
+    count: 1,
+    before: 'fold(t){this.setState("user_fold"),null===this.calc&&this.start(t),this.do(this.render.convertToPage(t))}',
+    after: 'fold(t){if(null===this.calc&&!this.start(t)){this.setState("read");return}this.setState("user_fold"),this.do(this.render.convertToPage(t))}',
+  },
+  {
+    name: 'position-aware next-page corner',
+    count: 1,
+    before: 'flipNext(t){this.flip({x:this.render.getRect().left+2*this.render.getRect().pageWidth-10,y:"top"===t?1:this.render.getRect().height-2})}',
+    after: 'flipNext(t){const e=this.render.getRect();this.flip({x:e.left+2*e.pageWidth-10,y:"top"===t?e.top+1:e.top+e.height-2})}',
+  },
+  {
+    name: 'position-aware previous-page corner',
+    count: 1,
+    before: 'flipPrev(t){this.flip({x:10,y:"top"===t?1:this.render.getRect().height-2})}',
+    after: 'flipPrev(t){const e=this.render.getRect();this.flip({x:e.left+10,y:"top"===t?e.top+1:e.top+e.height-2})}',
+  },
 ]
 
 const occurrences = (source, snippet) => source.split(snippet).length - 1
 const outputs = []
 
-// Validate both shipped entry points before writing either. A partial patch or
-// an unexpected package build must fail installation instead of silently losing
-// cleanup. Fully patched files are accepted so repeated installs are harmless.
+// Validate both shipped entry points before writing either. Each replacement
+// may already be patched or still be original, which lets this script safely
+// gain a new fix without requiring node_modules to be reinstalled first.
 for (const filename of ['page-flip.browser.js', 'page-flip.module.js']) {
   const path = new URL(`dist/js/${filename}`, packageRoot)
   const original = await readFile(path, 'utf8')
-  const originalMatches = replacements.every(({ before, after, count }) =>
-    occurrences(original, before) === count && occurrences(original, after) === 0,
-  )
-  const patchedMatches = replacements.every(({ before, after, count }) =>
-    occurrences(original, before) === 0 && occurrences(original, after) === count,
-  )
-
-  if (patchedMatches) continue
-  if (!originalMatches) {
-    const unexpected = replacements.filter(({ before, after, count }) =>
-      occurrences(original, before) !== count || occurrences(original, after) !== 0,
-    ).map(({ name }) => name)
+  const unexpected = replacements.filter(({ before, after, count }) => {
+    const originalCount = occurrences(original, before)
+    const patchedCount = occurrences(original, after)
+    return !(
+      (originalCount === count && patchedCount === 0) ||
+      (originalCount === 0 && patchedCount === count)
+    )
+  }).map(({ name }) => name)
+  if (unexpected.length) {
     throw new Error(`Unexpected page-flip build in ${filename}: ${unexpected.join(', ')}. Refusing a partial patch.`)
   }
 
   let patched = original
   for (const { before, after } of replacements) patched = patched.replaceAll(before, after)
-  outputs.push({ path, patched })
+  if (patched !== original) outputs.push({ path, patched })
 }
 
 for (const { path, patched } of outputs) await writeFile(path, patched, 'utf8')
